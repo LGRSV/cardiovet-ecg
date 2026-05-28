@@ -836,6 +836,16 @@ body {
       <span>⚠️</span>
       <span>Esta ferramenta é um <strong>auxílio ao raciocínio clínico</strong> e não substitui a avaliação presencial do médico-veterinário. Os scores refletem compatibilidade com a base de dados.</span>
     </div>
+    <div style="margin-top:14px;text-align:center;">
+      <a href="#ecg" onclick="abrirECGDireto(event)"
+         style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;
+                background:linear-gradient(135deg,var(--teal) 0%,#0d5f72 100%);
+                color:#fff;border-radius:30px;font-size:0.88rem;font-weight:700;
+                text-decoration:none;transition:opacity .15s;"
+         onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
+        📈 Preencher parâmetros de ECG diretamente
+      </a>
+    </div>
   </div>
 
   <!-- ─── PASSO 1: Espécie ─────────────────────────────────────────── -->
@@ -1963,11 +1973,44 @@ function applyECGBonus() {
 }
 
 /* ══════════════════════════════════════════════════════════════════════════
+   ATALHO ECG — abre o painel diretamente
+══════════════════════════════════════════════════════════════════════════ */
+function abrirECGDireto(e) {
+  if (e) e.preventDefault();
+
+  // Seleciona o card de ECG e abre o painel
+  selExam.add('ecg');
+  const n = selExam.size;
+  document.getElementById('cnt-exam').textContent = n + (n === 1 ? ' selecionado' : ' selecionados');
+
+  // Re-renderiza os cards marcando ECG como ativo
+  renderExam();
+
+  // Abre o painel
+  const panel = document.getElementById('ecg-panel');
+  panel.classList.add('open');
+
+  // Ajusta porte
+  const porteRow = document.getElementById('ecg-porte-row');
+  porteRow.style.display = (especie === 'gato') ? 'none' : 'flex';
+
+  updateSteppers();
+
+  // Scrolla até o painel
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
    INIT
 ══════════════════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', () => {
   renderSint();
   renderExam();
+
+  // Abre ECG automaticamente se URL tiver #ecg
+  if (window.location.hash === '#ecg') {
+    setTimeout(abrirECGDireto, 300);
+  }
 });
 </script>
 </body>
