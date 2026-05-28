@@ -1,1025 +1,1974 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cardiovet IA — Diagnóstico Cardiovascular Veterinário</title>
-  <style>
-    :root {
-      --navy:      #0D1B2A;
-      --blue:      #1A4E8A;
-      --lightblue: #2E86C1;
-      --teal:      #0D9488;
-      --teallight: #5EEAD4;
-      --red:       #C0392B;
-      --orange:    #E67E22;
-      --green:     #27AE60;
-      --gray:      #F4F6F7;
-      --darkgray:  #2C3E50;
-      --border:    #D5DBDB;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
-    body { font-family: 'Segoe UI', Arial, sans-serif; background: #ECF0F1; color: var(--darkgray); }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CardioVet IA – Diagnóstico Diferencial Cardiovascular</title>
+<style>
+/* ─────────────────────────────── DESIGN TOKENS ─────────────────────────── */
+:root {
+  --navy:       #0d1f2d;
+  --navy-mid:   #1a3448;
+  --teal:       #0b7285;
+  --teal-light: #1a9ab5;
+  --teal-pale:  #e8f5f8;
+  --teal-pale2: #d0ebf0;
+  --accent:     #e84a5f;
+  --gold:       #f4a435;
+  --green:      #27ae60;
+  --blue:       #2980b9;
+  --purple:     #8e44ad;
+  --text:       #1a2e3b;
+  --text-mid:   #3d5568;
+  --text-muted: #7a93a3;
+  --border:     #d8e5eb;
+  --bg:         #f0f4f7;
+  --white:      #ffffff;
+  --card-shadow: 0 2px 16px rgba(13,31,45,0.08), 0 1px 4px rgba(13,31,45,0.05);
+  --card-shadow-hover: 0 8px 32px rgba(13,31,45,0.14), 0 2px 8px rgba(13,31,45,0.08);
+  --radius-lg: 16px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+}
 
-    /* ── NAV ─────────────────────────────────────────────── */
-    nav {
-      background: var(--navy);
-      border-bottom: 3px solid var(--teal);
-      position: sticky; top: 0; z-index: 100;
-    }
-    .nav-inner {
-      max-width: 1100px; margin: 0 auto;
-      padding: 0 24px;
-      display: flex; align-items: center; gap: 0;
-    }
-    .nav-logo {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 0; text-decoration: none; margin-right: 32px;
-    }
-    .nav-logo .mark {
-      width: 34px; height: 34px; background: var(--teal); border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 900; color: white;
-    }
-    .nav-logo span { color: white; font-size: 16px; font-weight: 700; }
-    .nav-links { display: flex; gap: 4px; }
-    .nav-links a {
-      color: #8EACC8; text-decoration: none; font-size: 14px; font-weight: 500;
-      padding: 18px 16px; border-bottom: 3px solid transparent; margin-bottom: -3px;
-      transition: color .2s, border-color .2s;
-    }
-    .nav-links a:hover, .nav-links a.active { color: white; border-bottom-color: var(--teal); }
-    .nav-badge {
-      margin-left: auto; background: var(--teal); color: white;
-      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
-    }
+/* ─────────────────────────────── HEADER ────────────────────────────────── */
+.site-header {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 50%, var(--teal) 100%);
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+}
+.site-header::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+.header-inner {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 36px 24px 32px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.header-logo {
+  width: 70px; height: 70px;
+  background: rgba(255,255,255,0.12);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 18px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.4rem;
+  flex-shrink: 0;
+  backdrop-filter: blur(10px);
+}
+.header-text h1 {
+  font-size: 2rem; font-weight: 800;
+  color: #fff; letter-spacing: -0.5px;
+  display: flex; align-items: center; gap: 10px;
+}
+.beta-chip {
+  font-size: 0.6rem; font-weight: 700;
+  background: var(--accent); color: #fff;
+  padding: 3px 8px; border-radius: 20px;
+  letter-spacing: 1.5px; vertical-align: middle;
+}
+.header-text p {
+  color: rgba(255,255,255,0.72);
+  font-size: 0.95rem; margin-top: 4px;
+}
+.header-stats {
+  margin-left: auto;
+  display: flex; gap: 20px; flex-shrink: 0;
+}
+.h-stat {
+  text-align: center; color: rgba(255,255,255,0.85);
+}
+.h-stat-num {
+  font-size: 1.6rem; font-weight: 800; line-height: 1;
+  color: #fff;
+}
+.h-stat-lbl {
+  font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.5px;
+}
 
-    /* ── HERO ────────────────────────────────────────────── */
-    .hero {
-      background: var(--navy);
-      padding: 72px 24px 80px;
-      text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .hero::before {
-      content: '';
-      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(
-        90deg, transparent, transparent 80px,
-        rgba(13,148,136,.04) 80px, rgba(13,148,136,.04) 81px
-      );
-    }
-    .hero-inner { position: relative; max-width: 700px; margin: 0 auto; }
-    .hero-tag {
-      display: inline-block; background: rgba(13,148,136,.2); color: var(--teallight);
-      font-size: 11px; font-weight: 700; letter-spacing: 2px;
-      padding: 5px 16px; border-radius: 20px; margin-bottom: 20px;
-    }
-    .hero h1 { font-size: 52px; font-weight: 800; color: white; letter-spacing: -1px; line-height: 1.1; }
-    .hero h1 span { color: var(--teallight); }
-    .hero p {
-      margin: 20px 0 36px; font-size: 18px; color: #8EACC8; line-height: 1.6;
-    }
-    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    .btn-primary {
-      background: var(--teal); color: white; border: none;
-      padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;
-      cursor: pointer; text-decoration: none; transition: background .2s;
-    }
-    .btn-primary:hover { background: #0b7a6e; }
-    .btn-outline {
-      background: transparent; color: white; border: 2px solid rgba(255,255,255,.3);
-      padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
-      cursor: pointer; text-decoration: none; transition: border-color .2s;
-    }
-    .btn-outline:hover { border-color: white; }
+/* ─────────────────────────────── STEPPER ───────────────────────────────── */
+.stepper-bar {
+  background: var(--white);
+  border-bottom: 1px solid var(--border);
+  position: sticky; top: 0; z-index: 100;
+  box-shadow: 0 2px 8px rgba(13,31,45,0.07);
+}
+.stepper-inner {
+  max-width: 1040px; margin: 0 auto;
+  padding: 0 24px;
+  display: flex; gap: 0;
+}
+.step-tab {
+  flex: 1; padding: 14px 8px;
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; font-size: 0.82rem; font-weight: 600;
+  color: var(--text-muted); border-bottom: 3px solid transparent;
+  cursor: pointer; transition: all 0.2s; user-select: none;
+  white-space: nowrap;
+}
+.step-tab:hover { color: var(--teal); }
+.step-tab.done { color: var(--teal); border-bottom-color: var(--teal-pale2); }
+.step-tab.active { color: var(--teal); border-bottom-color: var(--teal); }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--border); color: var(--text-muted);
+  font-size: 0.72rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.2s;
+}
+.step-tab.active .step-num { background: var(--teal); color: #fff; }
+.step-tab.done .step-num { background: var(--green); color: #fff; }
+.step-check { font-size: 0.7rem; }
 
-    /* ── STATS BAR ───────────────────────────────────────── */
-    .stats-bar {
-      background: var(--blue);
-      padding: 20px 24px;
-    }
-    .stats-inner {
-      max-width: 1100px; margin: 0 auto;
-      display: flex; gap: 0; flex-wrap: wrap;
-    }
-    .stat-item {
-      flex: 1; min-width: 140px; text-align: center;
-      padding: 8px 16px;
-      border-right: 1px solid rgba(255,255,255,.15);
-    }
-    .stat-item:last-child { border-right: none; }
-    .stat-num { font-size: 26px; font-weight: 800; color: var(--teallight); }
-    .stat-label { font-size: 12px; color: #B0C4DE; margin-top: 2px; }
+/* ─────────────────────────────── LAYOUT ────────────────────────────────── */
+.page-body { max-width: 1040px; margin: 0 auto; padding: 28px 20px 80px; }
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 
-    /* ── SECTIONS ────────────────────────────────────────── */
-    section { padding: 60px 24px; }
-    .section-inner { max-width: 1100px; margin: 0 auto; }
-    .section-title {
-      font-size: 28px; font-weight: 800; color: var(--navy); margin-bottom: 8px;
-    }
-    .section-sub { font-size: 15px; color: #7F8C8D; margin-bottom: 36px; }
-    .section-divider {
-      width: 48px; height: 4px; background: var(--teal); border-radius: 2px; margin-bottom: 12px;
-    }
+/* ─────────────────────────────── CARDS ─────────────────────────────────── */
+.section-card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  margin-bottom: 20px;
+  transition: box-shadow 0.2s;
+}
+.section-card:hover { box-shadow: var(--card-shadow-hover); }
+.card-head {
+  padding: 18px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  background: linear-gradient(to right, var(--teal-pale), var(--white) 60%);
+}
+.card-step-num {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--teal); color: #fff;
+  font-size: 0.85rem; font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.card-head-text h3 {
+  font-size: 0.95rem; font-weight: 700;
+  color: var(--navy-mid); line-height: 1.2;
+}
+.card-head-text small {
+  font-size: 0.75rem; color: var(--text-muted); font-weight: 400;
+}
+.card-body { padding: 20px 24px; }
 
-    /* ── COMO FUNCIONA ───────────────────────────────────── */
-    #como-funciona { background: white; }
-    .steps { display: flex; gap: 20px; flex-wrap: wrap; }
-    .step {
-      flex: 1; min-width: 200px;
-      padding: 28px 24px;
-      background: var(--gray);
-      border-radius: 12px;
-      position: relative;
-    }
-    .step-num {
-      width: 40px; height: 40px; background: var(--teal); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 800; color: white; margin-bottom: 14px;
-    }
-    .step h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
-    .step p  { font-size: 13px; color: #666; line-height: 1.55; }
-    .step-arrow {
-      position: absolute; right: -12px; top: 50%;
-      transform: translateY(-50%);
-      width: 24px; height: 24px; background: var(--teal); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center;
-      color: white; font-size: 12px; z-index: 1;
-    }
-    @media (max-width: 600px) { .step-arrow { display: none; } }
+/* ─────────────────────────────── ABOUT ─────────────────────────────────── */
+.about-card {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border-radius: var(--radius-lg);
+  padding: 28px 28px 24px;
+  margin-bottom: 20px;
+  color: #fff;
+  position: relative; overflow: hidden;
+}
+.about-card::after {
+  content: '🫀';
+  position: absolute; right: 24px; top: 50%; transform: translateY(-50%);
+  font-size: 5rem; opacity: 0.07; pointer-events: none;
+}
+.about-card h2 { font-size: 1.05rem; font-weight: 700; margin-bottom: 8px; }
+.about-card p { font-size: 0.84rem; color: rgba(255,255,255,0.72); line-height: 1.65; margin-bottom: 16px; }
+.about-flow {
+  display: flex; align-items: center; gap: 6px;
+  flex-wrap: wrap; margin-bottom: 18px;
+}
+.af-step {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 8px; padding: 6px 12px;
+  font-size: 0.78rem; color: rgba(255,255,255,0.9);
+  display: flex; align-items: center; gap: 6px;
+}
+.af-arrow { color: rgba(255,255,255,0.35); font-size: 0.8rem; }
+.about-warning {
+  background: rgba(244,164,53,0.15); border: 1px solid rgba(244,164,53,0.3);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  font-size: 0.78rem; color: rgba(255,255,255,0.8);
+  display: flex; gap: 8px; align-items: flex-start;
+}
 
-    /* ── EXAMES ──────────────────────────────────────────── */
-    #exames { background: var(--gray); }
-    .exames-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 18px;
-      margin-bottom: 32px;
-    }
-    .exame-card {
-      background: white; border-radius: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.07);
-      overflow: hidden; cursor: pointer;
-      border: 2px solid transparent;
-      transition: border-color .2s, box-shadow .2s, transform .15s;
-    }
-    .exame-card:hover {
-      border-color: var(--teal);
-      box-shadow: 0 6px 20px rgba(13,148,136,.15);
-      transform: translateY(-2px);
-    }
-    .exame-card.active {
-      border-color: var(--teal);
-      box-shadow: 0 6px 20px rgba(13,148,136,.2);
-    }
-    .exame-card.disabled {
-      opacity: .55; cursor: not-allowed;
-    }
-    .exame-card.disabled:hover { transform: none; border-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,.07); }
-    .exame-top {
-      background: var(--navy); padding: 20px;
-      display: flex; align-items: center; gap: 12px;
-    }
-    .exame-icon {
-      width: 44px; height: 44px; background: var(--teal); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
-    }
-    .exame-top h3 { color: white; font-size: 15px; font-weight: 700; }
-    .exame-top p  { color: #8EACC8; font-size: 12px; margin-top: 2px; }
-    .exame-body { padding: 16px 20px; }
-    .exame-body p { font-size: 13px; color: #666; line-height: 1.5; }
-    .exame-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
-    .tag {
-      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
-      letter-spacing: .5px;
-    }
-    .tag-active    { background: #E8F8F5; color: var(--teal); }
-    .tag-soon      { background: #EBF5FB; color: var(--blue); }
-    .tag-coming    { background: #F4F4F4; color: #999; }
+/* ─────────────────────────────── SPECIES ───────────────────────────────── */
+.species-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.species-btn {
+  border: 2px solid var(--border); border-radius: var(--radius);
+  background: var(--white); cursor: pointer;
+  padding: 24px 16px; text-align: center;
+  transition: all 0.2s; position: relative; overflow: hidden;
+}
+.species-btn::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--teal-pale); opacity: 0; transition: opacity 0.2s;
+}
+.species-btn:hover::before { opacity: 1; }
+.species-btn:hover { border-color: var(--teal); transform: translateY(-2px); box-shadow: 0 4px 16px rgba(11,114,133,0.15); }
+.species-btn.active { border-color: var(--teal); background: var(--teal-pale); box-shadow: 0 0 0 3px rgba(11,114,133,0.15); }
+.species-btn.active::before { opacity: 0; }
+.sp-emoji { font-size: 2.8rem; display: block; margin-bottom: 8px; position: relative; }
+.sp-label { font-size: 1rem; font-weight: 700; color: var(--text-mid); position: relative; }
+.species-btn.active .sp-label { color: var(--teal); }
+.sp-check {
+  position: absolute; top: 10px; right: 10px;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--teal); color: #fff;
+  font-size: 0.75rem; font-weight: 900;
+  display: none; align-items: center; justify-content: center;
+}
+.species-btn.active .sp-check { display: flex; }
 
-    /* ── ECG PANEL ───────────────────────────────────────── */
-    #ecg-panel {
-      display: none;
-      background: white; border-radius: 16px;
-      box-shadow: 0 4px 24px rgba(0,0,0,.1);
-      overflow: hidden;
-      margin-top: 8px;
-      animation: slideDown .3s ease;
-    }
-    #ecg-panel.open { display: block; }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    .ecg-panel-header {
-      background: var(--navy); padding: 18px 24px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .ecg-panel-header h2 { color: white; font-size: 16px; font-weight: 700; }
-    .ecg-panel-header p  { color: #8EACC8; font-size: 12px; margin-top: 2px; }
-    .btn-close-panel {
-      background: rgba(255,255,255,.15); color: white; border: none;
-      width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
-      font-size: 16px; display: flex; align-items: center; justify-content: center;
-      transition: background .2s; flex-shrink: 0;
-    }
-    .btn-close-panel:hover { background: rgba(255,255,255,.25); }
-    .ecg-panel-body {
-      padding: 28px 24px;
-      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
-    }
-    @media (max-width: 780px) { .ecg-panel-body { grid-template-columns: 1fr; } }
+/* ─────────────────────────────── PACIENTE (RAÇA/IDADE) ─────────────────── */
+.patient-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.field-group { }
+.field-label {
+  font-size: 0.72rem; font-weight: 700;
+  color: var(--text-muted); text-transform: uppercase;
+  letter-spacing: 0.6px; margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.age-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.age-pill {
+  padding: 9px 16px; border: 1.5px solid var(--border);
+  border-radius: 24px; background: var(--white);
+  cursor: pointer; font-size: 0.83rem; font-weight: 600;
+  color: var(--text-mid); transition: all 0.15s; user-select: none;
+  display: flex; align-items: center; gap: 5px;
+}
+.age-pill:hover { border-color: var(--teal); color: var(--teal); background: var(--teal-pale); }
+.age-pill.active {
+  border-color: var(--teal); background: var(--teal);
+  color: #fff; box-shadow: 0 2px 8px rgba(11,114,133,0.3);
+}
+.breed-wrap { position: relative; }
+.breed-input {
+  width: 100%; padding: 11px 14px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 0.88rem; color: var(--text); background: var(--white);
+  outline: none; transition: border-color 0.2s, box-shadow 0.2s;
+}
+.breed-input:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(11,114,133,0.1); }
+.breed-list {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+  background: var(--white); border: 1.5px solid var(--teal);
+  border-radius: var(--radius-sm); z-index: 200;
+  max-height: 220px; overflow-y: auto;
+  box-shadow: 0 8px 24px rgba(13,31,45,0.12);
+  display: none;
+}
+.breed-list.open { display: block; }
+.breed-opt {
+  padding: 10px 14px; cursor: pointer;
+  font-size: 0.85rem; color: var(--text); transition: background 0.1s;
+}
+.breed-opt:hover { background: var(--teal-pale); color: var(--teal); }
 
-    /* ── FORM STYLES ─────────────────────────────────────── */
-    .form-card { background: var(--gray); border-radius: 12px; overflow: hidden; }
-    .form-card-header {
-      background: var(--blue); color: white; padding: 12px 18px;
-      font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 7px;
-    }
-    .form-card-body { padding: 18px; }
-    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form-grid .full { grid-column: 1 / -1; }
-    .field-divider {
-      grid-column: 1 / -1;
-      font-size: 11px; font-weight: 700; color: var(--blue);
-      text-transform: uppercase; letter-spacing: 1px;
-      border-bottom: 1.5px solid var(--border); padding-bottom: 5px; margin-top: 4px;
-    }
-    label {
-      display: block; font-size: 11px; font-weight: 600;
-      color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .3px;
-    }
-    label .ref { color: var(--teal); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 10px; }
-    label .unit { color: #999; font-weight: 400; text-transform: none; }
-    input[type=number], input[type=text], select {
-      width: 100%; padding: 8px 11px; border: 1.5px solid var(--border);
-      border-radius: 8px; font-size: 13px; color: var(--darkgray); background: white;
-      transition: border-color .2s;
-    }
-    input:focus, select:focus { outline: none; border-color: var(--teal); }
-    input.ok     { border-color: var(--green);  background: #F0FFF4; }
-    input.warn   { border-color: var(--orange); background: #FFFBF0; }
-    input.danger { border-color: var(--red);    background: #FFF5F5; }
+/* ─────────────────────────────── SEARCH BAR ────────────────────────────── */
+.search-row { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.search-wrap { flex: 1; position: relative; }
+.search-wrap input {
+  width: 100%; padding: 10px 14px 10px 40px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 0.88rem; color: var(--text); background: var(--bg);
+  outline: none; transition: all 0.2s;
+}
+.search-wrap input:focus { border-color: var(--teal); background: var(--white); box-shadow: 0 0 0 3px rgba(11,114,133,0.08); }
+.search-ico { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 0.95rem; color: var(--text-muted); pointer-events: none; }
+.pill-count {
+  background: var(--teal); color: #fff;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 0.78rem; font-weight: 700; white-space: nowrap;
+}
+.link-clear {
+  color: var(--accent); font-size: 0.8rem; font-weight: 600;
+  cursor: pointer; text-decoration: none;
+  padding: 4px 8px; border-radius: var(--radius-xs);
+  transition: background 0.15s; white-space: nowrap;
+}
+.link-clear:hover { background: #fdedf0; }
 
-    .btn-analyze {
-      grid-column: 1 / -1; margin-top: 6px;
-      background: var(--teal); color: white; border: none;
-      border-radius: 10px; padding: 13px; font-size: 14px; font-weight: 700;
-      cursor: pointer; transition: background .2s;
-    }
-    .btn-analyze:hover { background: #0b7a6e; }
-    .btn-clear-form {
-      grid-column: 1 / -1;
-      background: transparent; color: #999; border: 1.5px solid var(--border);
-      border-radius: 10px; padding: 8px; font-size: 12px; cursor: pointer;
-    }
+/* ─────────────────────────────── SINT GRID ─────────────────────────────── */
+.sint-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+  gap: 7px; max-height: 300px; overflow-y: auto;
+  padding: 2px 2px 4px;
+}
+.sint-grid::-webkit-scrollbar { width: 5px; }
+.sint-grid::-webkit-scrollbar-track { background: var(--bg); border-radius: 4px; }
+.sint-grid::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.sint-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  cursor: pointer; transition: all 0.12s;
+  font-size: 0.83rem; color: var(--text-mid);
+  background: var(--white); user-select: none;
+}
+.sint-item:hover { border-color: var(--teal); background: var(--teal-pale); color: var(--text); }
+.sint-item.on { border-color: var(--teal); background: var(--teal-pale); color: var(--teal); font-weight: 600; }
+.chk-box {
+  width: 18px; height: 18px; border: 2px solid var(--border);
+  border-radius: 4px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0; transition: all 0.12s;
+}
+.sint-item.on .chk-box { background: var(--teal); border-color: var(--teal); font-size: 0.65rem; color: #fff; }
+.sint-item.on .chk-box::after { content: '✓'; font-weight: 900; }
 
-    /* ── RESULT ──────────────────────────────────────────── */
-    .result-card { background: var(--gray); border-radius: 12px; overflow: hidden; }
-    .result-card-header {
-      background: var(--navy); color: white; padding: 12px 18px;
-      font-size: 13px; font-weight: 700;
-    }
-    .result-card-body { padding: 18px; min-height: 400px; }
-    #ecg-placeholder {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 300px; color: #BDC3C7; text-align: center; gap: 12px;
-    }
-    #ecg-placeholder .big-icon { font-size: 52px; }
-    #ecg-placeholder p { font-size: 13px; line-height: 1.5; }
-    #ecg-result { display: none; }
+/* ─────────────────────────────── EXAM CARDS ────────────────────────────── */
+.exam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 10px; }
+.exam-card {
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; cursor: pointer; transition: all 0.15s;
+  background: var(--white); display: flex; align-items: flex-start;
+  gap: 12px; user-select: none; position: relative; overflow: hidden;
+}
+.exam-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: var(--teal-pale); opacity: 0; transition: opacity 0.15s;
+}
+.exam-card:hover::before { opacity: 1; }
+.exam-card:hover { border-color: var(--teal); }
+.exam-card.on { border-color: var(--teal); background: var(--teal-pale); }
+.exam-card.on::before { opacity: 0; }
+.exam-ico { font-size: 1.7rem; flex-shrink: 0; position: relative; z-index: 1; }
+.exam-info { flex: 1; position: relative; z-index: 1; }
+.exam-name { font-size: 0.86rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.exam-card.on .exam-name { color: var(--teal); }
+.exam-hint { font-size: 0.73rem; color: var(--text-muted); line-height: 1.35; }
+.exam-dot {
+  width: 20px; height: 20px; border: 2px solid var(--border);
+  border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s; font-size: 0; position: relative; z-index: 1;
+  margin-top: 2px;
+}
+.exam-card.on .exam-dot { background: var(--teal); border-color: var(--teal); color: #fff; font-size: 0.65rem; font-weight: 900; }
+.exam-card.on .exam-dot::after { content: '✓'; }
 
-    .summary-chips { display: flex; gap: 8px; margin-bottom: 14px; }
-    .s-chip {
-      flex: 1; background: white; border-radius: 8px; padding: 8px;
-      text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.08);
-    }
-    .s-chip .n { font-size: 24px; font-weight: 800; }
-    .s-chip .l { font-size: 10px; color: #999; }
-    .ok-color  { color: var(--green); }
-    .w-color   { color: var(--orange); }
-    .d-color   { color: var(--red); }
-    .overall-badge {
-      display: flex; align-items: center; gap: 8px;
-      padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
-      margin-bottom: 14px;
-    }
-    .ov-ok     { background: #EAFAF1; color: var(--green);  border: 1.5px solid var(--green); }
-    .ov-warn   { background: #FEF9E7; color: var(--orange); border: 1.5px solid var(--orange); }
-    .ov-danger { background: #FDEDEC; color: var(--red);    border: 1.5px solid var(--red); }
-    .param-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
-    .param-table th {
-      background: white; font-size: 10px; font-weight: 700; color: #999;
-      text-transform: uppercase; padding: 6px 8px; text-align: left;
-    }
-    .param-table td { padding: 6px 8px; border-bottom: 1px solid #EEE; }
-    .param-table tr:last-child td { border-bottom: none; }
-    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 4px; }
-    .dot-ok { background: var(--green); }
-    .dot-w  { background: var(--orange); }
-    .dot-d  { background: var(--red); }
-    .diag-list { margin-bottom: 10px; }
-    .diag-item {
-      background: white; border-left: 3px solid var(--blue);
-      border-radius: 0 8px 8px 0; padding: 9px 12px; margin-bottom: 7px;
-      font-size: 12px;
-    }
-    .diag-item strong { color: var(--darkgray); font-size: 12px; }
-    .diag-item p { color: #666; margin-top: 2px; font-size: 11px; line-height: 1.4; }
-    .diag-item.urgent   { border-color: var(--red);    background: #FFF5F5; }
-    .diag-item.moderate { border-color: var(--orange); background: #FFFBF0; }
-    .diag-item.info     { border-color: var(--teal);   background: #F0FAFA; }
-    .disclaimer {
-      background: #FEF9E7; border: 1px solid #F9CA24;
-      border-radius: 8px; padding: 9px 12px;
-      font-size: 11px; color: #7D6608; display: flex; gap: 7px;
-    }
-    .ref-toggle-btn {
-      width: 100%; background: var(--navy); color: white; border: none;
-      border-radius: 8px; padding: 9px; font-size: 12px; font-weight: 600;
-      cursor: pointer; margin-top: 10px;
-    }
-    .ref-area { display: none; margin-top: 10px; overflow-x: auto; }
-    .ref-area.open { display: block; }
-    .ref-table { width: 100%; border-collapse: collapse; font-size: 11px; }
-    .ref-table th { background: var(--navy); color: white; padding: 6px 8px; text-align: left; }
-    .ref-table td { padding: 5px 8px; border-bottom: 1px solid #EEE; }
-    .ref-table tr:nth-child(even) td { background: #FAFAFA; }
-    .ref-note { font-size: 10px; color: #999; margin-top: 6px; }
+/* ─────────────────────────────── CTA BUTTON ────────────────────────────── */
+.cta-wrap { margin: 24px 0; }
+.btn-analyze {
+  width: 100%; padding: 18px 32px;
+  background: linear-gradient(135deg, var(--teal-light) 0%, var(--teal) 50%, var(--navy-mid) 100%);
+  color: #fff; border: none; border-radius: var(--radius);
+  font-size: 1.05rem; font-weight: 700; cursor: pointer;
+  transition: all 0.25s; letter-spacing: 0.3px;
+  box-shadow: 0 4px 20px rgba(11,114,133,0.35);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  position: relative; overflow: hidden;
+}
+.btn-analyze::after {
+  content: ''; position: absolute;
+  top: 0; left: -100%; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+  transition: left 0.5s;
+}
+.btn-analyze:hover::after { left: 100%; }
+.btn-analyze:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(11,114,133,0.45); }
+.btn-analyze:active { transform: translateY(0); }
 
-    /* ── SOBRE ───────────────────────────────────────────── */
-    #sobre { background: white; }
-    .sobre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
-    @media (max-width: 700px) { .sobre-grid { grid-template-columns: 1fr; } }
-    .sobre-text h2 { font-size: 24px; font-weight: 800; color: var(--navy); margin-bottom: 14px; }
-    .sobre-text p  { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 14px; }
-    .diff-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-    .diff-list li {
-      display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #555;
-    }
-    .diff-list li .d-icon {
-      width: 28px; height: 28px; background: rgba(13,148,136,.1); border-radius: 7px;
-      display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
-    }
+/* ─────────────────────────────── RESULTS ───────────────────────────────── */
+.results-wrap { display: none; }
+.results-wrap.visible { display: block; }
+.results-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; padding-bottom: 14px;
+  border-bottom: 2px solid var(--border);
+}
+.results-title { font-size: 1.15rem; font-weight: 800; color: var(--navy-mid); }
+.results-badge {
+  background: var(--teal-pale2); color: var(--teal);
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 0.8rem; font-weight: 700;
+}
+.disclaimer-banner {
+  background: #fffbf0; border: 1px solid #f4d483;
+  border-radius: var(--radius-sm); padding: 11px 16px;
+  font-size: 0.78rem; color: #7a5800;
+  margin-bottom: 18px; display: flex; gap: 8px; align-items: flex-start;
+}
 
-    /* ── FOOTER ──────────────────────────────────────────── */
-    footer {
-      background: var(--navy); color: #8EACC8;
-      padding: 32px 24px; text-align: center; font-size: 13px;
-      border-top: 3px solid var(--teal);
-    }
-    footer strong { color: white; }
-  </style>
+/* ─────────────────────────────── DISEASE CARD ──────────────────────────── */
+.d-card {
+  background: var(--white); border-radius: var(--radius);
+  border: 1px solid var(--border); margin-bottom: 10px;
+  box-shadow: var(--card-shadow); cursor: pointer;
+  overflow: hidden; transition: box-shadow 0.2s;
+}
+.d-card:hover { box-shadow: var(--card-shadow-hover); }
+.d-card.rank-1 { border-left: 5px solid var(--green); }
+.d-card.rank-2 { border-left: 5px solid var(--blue); }
+.d-card.rank-3 { border-left: 5px solid var(--purple); }
+.d-card.rank-x { border-left: 5px solid var(--border); }
+
+.d-top { padding: 16px 20px; display: flex; align-items: flex-start; gap: 14px; }
+.d-rank {
+  font-size: 1.3rem; font-weight: 900; line-height: 1;
+  width: 36px; text-align: center; flex-shrink: 0; padding-top: 2px;
+}
+.rank-1 .d-rank { color: var(--green); }
+.rank-2 .d-rank { color: var(--blue); }
+.rank-3 .d-rank { color: var(--purple); }
+.rank-x .d-rank { color: var(--text-muted); }
+
+.d-main { flex: 1; }
+.d-name { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.d-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+.dtag {
+  padding: 2px 9px; border-radius: 20px;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.2px;
+}
+.dt-cat    { background: #f0e6fa; color: #6a2fa0; }
+.dt-sp     { background: #e3f2fd; color: #1565c0; }
+.dt-rank1  { background: #e8f5e9; color: #2e7d32; }
+.dt-rank2  { background: #e3f2fd; color: #1565c0; }
+.dt-age    { background: #fff3e0; color: #e65100; }
+.dt-breed  { background: #fce4ec; color: #880e4f; }
+
+.d-score-area { flex-shrink: 0; text-align: right; min-width: 90px; }
+.d-pct {
+  font-size: 2rem; font-weight: 900; line-height: 1;
+  letter-spacing: -1px;
+}
+.rank-1 .d-pct { color: var(--green); }
+.rank-2 .d-pct { color: var(--blue); }
+.rank-3 .d-pct { color: var(--purple); }
+.rank-x .d-pct { color: var(--text-muted); }
+.d-pct-lbl { font-size: 0.68rem; color: var(--text-muted); font-weight: 500; }
+
+.d-bar-wrap { padding: 0 20px 14px; }
+.d-bar-bg { height: 6px; background: var(--bg); border-radius: 20px; overflow: hidden; }
+.d-bar-fill { height: 100%; border-radius: 20px; transition: width 0.6s cubic-bezier(0.4,0,0.2,1); }
+.rank-1 .d-bar-fill { background: linear-gradient(90deg, #66bb6a, var(--green)); }
+.rank-2 .d-bar-fill { background: linear-gradient(90deg, #42a5f5, var(--blue)); }
+.rank-3 .d-bar-fill { background: linear-gradient(90deg, #ce93d8, var(--purple)); }
+.rank-x .d-bar-fill { background: linear-gradient(90deg, #cfd8dc, #90a4ae); }
+
+.d-toggle {
+  padding: 8px 20px;
+  background: var(--bg); border-top: 1px solid var(--border);
+  font-size: 0.78rem; color: var(--text-muted);
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  font-weight: 600; letter-spacing: 0.2px;
+}
+.toggle-arrow { transition: transform 0.2s; }
+.d-card.open .toggle-arrow { transform: rotate(180deg); }
+
+.d-expand {
+  display: none; padding: 18px 20px 20px;
+  border-top: 1px solid var(--border);
+}
+.d-card.open .d-expand { display: block; }
+.d-desc-text {
+  font-size: 0.84rem; color: var(--text-mid);
+  line-height: 1.65; margin-bottom: 16px;
+  padding: 12px 14px; background: var(--bg);
+  border-radius: var(--radius-sm); font-style: italic;
+}
+.info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.info-box { background: var(--bg); border-radius: var(--radius-sm); padding: 12px 14px; }
+.info-box-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 4px; }
+.info-box-val { font-size: 0.83rem; font-weight: 600; color: var(--text); line-height: 1.4; }
+.ref-line {
+  font-size: 0.75rem; color: var(--text-muted);
+  margin-bottom: 14px; padding: 8px 12px;
+  border-left: 3px solid var(--teal-pale2);
+}
+.ref-line strong { color: var(--teal); }
+
+.match-section { margin-bottom: 10px; }
+.match-label { font-size: 0.73rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-muted); margin-bottom: 7px; }
+.match-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.chip-s {
+  padding: 3px 10px; border-radius: 20px; font-size: 0.73rem; font-weight: 600;
+  background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7;
+}
+.chip-e {
+  padding: 3px 10px; border-radius: 20px; font-size: 0.73rem; font-weight: 600;
+  background: #e3f2fd; color: #1565c0; border: 1px solid #90caf9;
+}
+
+/* ─────────────────────────────── COMPARE SECTION ──────────────────────── */
+.compare-wrap { display: none; margin-top: 28px; }
+.compare-wrap.visible { display: block; }
+.compare-card {
+  background: var(--white); border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow); border: 1px solid var(--border);
+  overflow: hidden;
+}
+.compare-head {
+  padding: 18px 24px 16px;
+  background: linear-gradient(to right, #fff8f0, var(--white) 60%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+}
+.compare-icon-box {
+  width: 32px; height: 32px; border-radius: 10px;
+  background: var(--gold); color: #fff;
+  font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.compare-head-text h3 { font-size: 0.95rem; font-weight: 700; color: var(--navy-mid); }
+.compare-head-text small { font-size: 0.75rem; color: var(--text-muted); }
+.compare-body { padding: 22px 24px; }
+.compare-select-label { font-size: 0.78rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.compare-select {
+  width: 100%; padding: 12px 16px;
+  border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+  font-size: 0.9rem; color: var(--text); background: var(--bg);
+  outline: none; cursor: pointer; transition: border-color 0.2s;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%237a93a3' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 14px center;
+  padding-right: 36px;
+}
+.compare-select:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(244,164,53,0.12); }
+
+/* output área */
+.compare-output { display: none; margin-top: 22px; }
+.compare-output.show { display: block; }
+
+.co-target {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+  border-radius: var(--radius); padding: 16px 20px; margin-bottom: 20px;
+  color: #fff; display: flex; align-items: center; gap: 14px;
+}
+.co-target-icon { font-size: 2rem; flex-shrink: 0; }
+.co-target-text { flex: 1; }
+.co-target-label { font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.6; margin-bottom: 2px; }
+.co-target-name { font-size: 1.05rem; font-weight: 800; }
+.co-target-score {
+  background: rgba(255,255,255,0.15); border-radius: var(--radius-sm);
+  padding: 8px 14px; text-align: center; flex-shrink: 0;
+}
+.co-target-pct { font-size: 1.6rem; font-weight: 900; line-height: 1; }
+.co-target-pct-lbl { font-size: 0.65rem; opacity: 0.7; }
+
+.co-section-title {
+  font-size: 0.8rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.co-section-title::after {
+  content: ''; flex: 1; height: 1px; background: var(--border);
+}
+
+/* bloco de comparação com outra doença */
+.co-rival {
+  border: 1px solid var(--border); border-radius: var(--radius);
+  margin-bottom: 10px; overflow: hidden; background: var(--white);
+}
+.co-rival-head {
+  padding: 13px 16px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; transition: background 0.15s;
+}
+.co-rival-head:hover { background: var(--bg); }
+.co-rival-rank { font-size: 1.1rem; font-weight: 900; width: 28px; text-align: center; flex-shrink: 0; }
+.co-rival-info { flex: 1; }
+.co-rival-name { font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+.co-rival-sub { font-size: 0.73rem; color: var(--text-muted); }
+.co-rival-delta {
+  font-size: 0.85rem; font-weight: 800; flex-shrink: 0;
+  padding: 4px 10px; border-radius: 20px;
+}
+.delta-above { background: #e8f5e9; color: var(--green); }
+.delta-below { background: #fce4ec; color: #c62828; }
+.delta-same  { background: var(--bg); color: var(--text-muted); }
+.co-rival-arrow { color: var(--text-muted); font-size: 0.75rem; transition: transform 0.2s; flex-shrink: 0; }
+.co-rival.open .co-rival-arrow { transform: rotate(180deg); }
+
+.co-rival-body { display: none; padding: 14px 16px 16px; border-top: 1px solid var(--border); background: #fafcfd; }
+.co-rival.open .co-rival-body { display: block; }
+
+/* razões */
+.reason-group { margin-bottom: 14px; }
+.reason-title {
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.4px; margin-bottom: 7px;
+  display: flex; align-items: center; gap: 6px;
+}
+.reason-list { display: flex; flex-wrap: wrap; gap: 5px; }
+.reason-chip {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 0.73rem; font-weight: 600;
+}
+.chip-green  { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.chip-red    { background: #fce4ec; color: #c62828; border: 1px solid #f8bbd0; }
+.chip-blue   { background: #e3f2fd; color: #1565c0; border: 1px solid #bbdefb; }
+.chip-orange { background: #fff3e0; color: #e65100; border: 1px solid #ffe0b2; }
+.chip-grey   { background: var(--bg); color: var(--text-muted); border: 1px solid var(--border); }
+
+.co-summary {
+  background: #fffbf0; border: 1px solid #f4d483;
+  border-radius: var(--radius-sm); padding: 13px 16px;
+  font-size: 0.83rem; color: #5d4000; line-height: 1.6; margin-bottom: 0;
+}
+.co-summary strong { color: #7a4f00; }
+.no-rivals { text-align:center; padding: 28px; color: var(--text-muted); font-size: 0.88rem; }
+
+/* ─────────────────────────────── FOOTER ────────────────────────────────── */
+.site-footer {
+  text-align: center; padding: 28px 16px;
+  font-size: 0.76rem; color: var(--text-muted);
+  border-top: 1px solid var(--border); margin-top: 20px;
+}
+
+/* ─────────────────────────────── RESPONSIVE ────────────────────────────── */
+@media (max-width: 680px) {
+  .header-inner { flex-direction: column; text-align: center; gap: 14px; }
+  .header-stats { margin-left: 0; }
+  .header-text h1 { font-size: 1.55rem; justify-content: center; }
+  .stepper-inner { overflow-x: auto; }
+  .step-tab { font-size: 0.72rem; padding: 12px 6px; gap: 5px; }
+  .species-grid { grid-template-columns: 1fr 1fr; }
+  .patient-row, .two-col, .info-row { grid-template-columns: 1fr; }
+  .sint-grid, .exam-grid { grid-template-columns: 1fr; }
+  .card-body { padding: 16px 16px; }
+  .card-head { padding: 14px 16px; }
+}
+@media (max-width: 420px) {
+  .species-grid { grid-template-columns: 1fr 1fr; }
+  .age-pills { gap: 6px; }
+  .age-pill { font-size: 0.78rem; padding: 7px 12px; }
+}
+
+/* ─────────────────────────── PAINEL ECG ────────────────────────────────── */
+#ecg-panel {
+  display: none;
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1.5px solid var(--teal);
+  border-radius: 14px;
+  overflow: hidden;
+  animation: ecgSlideIn .25s ease;
+}
+#ecg-panel.open { display: block; }
+@keyframes ecgSlideIn {
+  from { opacity:0; transform:translateY(-8px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.ecg-panel-head {
+  background: linear-gradient(135deg, var(--teal) 0%, #0d5f72 100%);
+  padding: 14px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.ecg-panel-head h4 {
+  margin: 0; color: #fff; font-size: 1rem;
+  font-weight: 600; flex: 1;
+}
+.ecg-panel-head span.ecg-sub {
+  color: rgba(255,255,255,.75); font-size: 0.78rem;
+}
+.ecg-body { padding: 20px 20px 8px; }
+.ecg-row-title {
+  font-size: 0.72rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; color: var(--teal);
+  margin: 18px 0 10px; padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+}
+.ecg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 12px;
+}
+.ecg-field { display: flex; flex-direction: column; gap: 4px; }
+.ecg-field label {
+  font-size: 0.76rem; font-weight: 600; color: var(--text-muted);
+}
+.ecg-input-wrap { position: relative; }
+.ecg-input {
+  width: 100%; padding: 8px 40px 8px 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 8px; color: var(--text-primary);
+  font-size: 0.88rem; outline: none; transition: border .15s;
+  box-sizing: border-box;
+}
+.ecg-input:focus { border-color: var(--teal); }
+.ecg-input.ok   { border-color: #2e7d32; background: rgba(46,125,50,.08); }
+.ecg-input.warn { border-color: #f57c00; background: rgba(245,124,0,.08); }
+.ecg-input.bad  { border-color: #c62828; background: rgba(198,40,40,.08); }
+.ecg-status {
+  position: absolute; right: 8px; top: 50%;
+  transform: translateY(-50%); font-size: 0.85rem;
+  pointer-events: none;
+}
+.ecg-select {
+  width: 100%; padding: 8px 10px;
+  background: var(--bg); border: 1.5px solid var(--border);
+  border-radius: 8px; color: var(--text-primary);
+  font-size: 0.88rem; outline: none; cursor: pointer;
+  box-sizing: border-box;
+}
+.ecg-select:focus { border-color: var(--teal); }
+.ecg-porte-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 14px;
+}
+.ecg-porte-row label { font-size: 0.8rem; color: var(--text-muted); }
+.ecg-porte-row select {
+  padding: 6px 10px; background: var(--bg);
+  border: 1.5px solid var(--border); border-radius: 8px;
+  color: var(--text-primary); font-size: 0.84rem; cursor: pointer;
+}
+.ecg-result-box {
+  margin: 16px 0; padding: 14px 16px;
+  background: rgba(11,114,133,.07);
+  border-left: 3px solid var(--teal); border-radius: 8px;
+}
+.ecg-result-box.hidden { display: none; }
+.ecg-result-title {
+  font-size: 0.78rem; font-weight: 700; letter-spacing: .05em;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 8px;
+}
+.ecg-finding-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.ecg-chip {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 4px 10px; border-radius: 20px;
+  font-size: 0.77rem; font-weight: 600;
+}
+.ecg-chip-ok   { background: rgba(46,125,50,.15);  color:#2e7d32; }
+.ecg-chip-warn { background: rgba(245,124,0,.15);  color:#e65100; }
+.ecg-chip-bad  { background: rgba(198,40,40,.15);  color:#c62828; }
+.ecg-chip-info { background: rgba(11,114,133,.15); color: var(--teal); }
+.ecg-apply-btn {
+  display: block; width: 100%; margin: 14px 0;
+  padding: 12px 20px; border-radius: 10px; border: none; cursor: pointer;
+  background: linear-gradient(135deg, var(--teal) 0%, #0d5f72 100%);
+  color: #fff; font-size: 0.95rem; font-weight: 700;
+  letter-spacing: .02em; transition: opacity .15s;
+}
+.ecg-apply-btn:hover { opacity: .88; }
+.ecg-applied-badge {
+  display: none; text-align: center; padding: 10px;
+  color: #2e7d32; font-size: 0.85rem; font-weight: 600;
+}
+.ecg-applied-badge.show { display: block; }
+.ecg-refs {
+  font-size: 0.72rem; color: var(--text-muted);
+  padding: 10px 20px 14px; border-top: 1px solid var(--border);
+  margin-top: 4px;
+}
+@media (max-width: 680px) {
+  .ecg-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 420px) {
+  .ecg-grid { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 
-<!-- ── NAV ──────────────────────────────────────────────────────────── -->
-<nav>
-  <div class="nav-inner">
-    <a class="nav-logo" href="#inicio">
-      <div class="mark">CV</div>
-      <span>Cardiovet IA</span>
-    </a>
-    <div class="nav-links">
-      <a href="#inicio"         class="active">Início</a>
-      <a href="#como-funciona">Como funciona</a>
-      <a href="#exames"        onclick="closePanel()">Exames</a>
-      <a href="#sobre">Sobre</a>
+<!-- ═══════════════════════ HEADER ══════════════════════════════════════ -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-logo">🫀</div>
+    <div class="header-text">
+      <h1>CardioVet IA <span class="beta-chip">BETA</span></h1>
+      <p>Ferramenta de diagnóstico diferencial cardiovascular para cães e gatos</p>
     </div>
-    <span class="nav-badge">BETA</span>
-  </div>
-</nav>
-
-<!-- ── HERO ─────────────────────────────────────────────────────────── -->
-<section id="inicio" style="padding:0">
-  <div class="hero">
-    <div class="hero-inner">
-      <div class="hero-tag">INTELIGÊNCIA ARTIFICIAL VETERINÁRIA</div>
-      <h1>Diagnóstico <span>cardiovascular</span><br/>para pequenos animais</h1>
-      <p>A Cardiovet IA auxilia o veterinário a identificar alterações cardíacas em cães e gatos com base em parâmetros clínicos e de exames, de forma rápida e baseada em evidências.</p>
-      <div class="hero-btns">
-        <a href="#exames" class="btn-primary" onclick="openECG()">📈 Analisar ECG agora</a>
-        <a href="#como-funciona" class="btn-outline">Como funciona →</a>
+    <div class="header-stats">
+      <div class="h-stat">
+        <div class="h-stat-num">15</div>
+        <div class="h-stat-lbl">Doenças</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num">90+</div>
+        <div class="h-stat-lbl">Sinais Clínicos</div>
+      </div>
+      <div class="h-stat">
+        <div class="h-stat-num">11</div>
+        <div class="h-stat-lbl">Exames</div>
       </div>
     </div>
   </div>
+</header>
 
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stats-inner">
-      <div class="stat-item">
-        <div class="stat-num">160M+</div>
-        <div class="stat-label">pets no Brasil</div>
+<!-- ═══════════════════════ STEPPER ═════════════════════════════════════ -->
+<div class="stepper-bar">
+  <div class="stepper-inner">
+    <div class="step-tab active" id="st1"><span class="step-num">1</span><span class="step-lbl">Espécie</span></div>
+    <div class="step-tab" id="st2"><span class="step-num">2</span><span class="step-lbl">Paciente</span></div>
+    <div class="step-tab" id="st3"><span class="step-num">3</span><span class="step-lbl">Sinais Clínicos</span></div>
+    <div class="step-tab" id="st4"><span class="step-num">4</span><span class="step-lbl">Exames</span></div>
+    <div class="step-tab" id="st5"><span class="step-num">5</span><span class="step-lbl">Resultado</span></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ BODY ════════════════════════════════════════ -->
+<div class="page-body">
+
+  <!-- SOBRE -->
+  <div class="about-card">
+    <h2>🐾 O que é o CardioVet IA?</h2>
+    <p>Ferramenta de apoio ao raciocínio clínico cardiológico veterinário. O sistema calcula a compatibilidade entre os achados do paciente e as principais doenças cardiovasculares com base em uma base de dados clínica e científica estruturada.</p>
+    <div class="about-flow">
+      <div class="af-step">1 · Espécie</div>
+      <div class="af-arrow">→</div>
+      <div class="af-step">2 · Raça & Idade</div>
+      <div class="af-arrow">→</div>
+      <div class="af-step">3 · Sinais clínicos</div>
+      <div class="af-arrow">→</div>
+      <div class="af-step">4 · Exames</div>
+      <div class="af-arrow">→</div>
+      <div class="af-step">5 · Diagnóstico</div>
+    </div>
+    <div class="about-warning">
+      <span>⚠️</span>
+      <span>Esta ferramenta é um <strong>auxílio ao raciocínio clínico</strong> e não substitui a avaliação presencial do médico-veterinário. Os scores refletem compatibilidade com a base de dados.</span>
+    </div>
+  </div>
+
+  <!-- ─── PASSO 1: Espécie ─────────────────────────────────────────── -->
+  <div class="section-card" id="card-especie">
+    <div class="card-head">
+      <div class="card-step-num">1</div>
+      <div class="card-head-text">
+        <h3>Espécie do paciente</h3>
+        <small>Filtra as doenças compatíveis com a espécie selecionada</small>
       </div>
-      <div class="stat-item">
-        <div class="stat-num">10%</div>
-        <div class="stat-label">dos cães têm cardiopatia</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">70%+</div>
-        <div class="stat-label">diagnósticos: DDVM</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">R$77bi</div>
-        <div class="stat-label">mercado pet em 2025</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">20%/ano</div>
-        <div class="stat-label">crescimento IA vet.</div>
+    </div>
+    <div class="card-body">
+      <div class="species-grid">
+        <button class="species-btn" data-esp="cão" onclick="pickEspecie(this)">
+          <div class="sp-check">✓</div>
+          <span class="sp-emoji">🐕</span>
+          <span class="sp-label">Cão</span>
+        </button>
+        <button class="species-btn" data-esp="gato" onclick="pickEspecie(this)">
+          <div class="sp-check">✓</div>
+          <span class="sp-emoji">🐈</span>
+          <span class="sp-label">Gato</span>
+        </button>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ── COMO FUNCIONA ─────────────────────────────────────────────────── -->
-<section id="como-funciona">
-  <div class="section-inner">
-    <div class="section-divider"></div>
-    <h2 class="section-title">Como funciona</h2>
-    <p class="section-sub">Três etapas simples para um diagnóstico diferencial cardiovascular completo.</p>
-    <div class="steps">
-      <div class="step">
-        <div class="step-num">01</div>
-        <h3>Entrada de dados</h3>
-        <p>O veterinário insere os parâmetros clínicos do paciente: espécie, porte, sinais clínicos e resultados dos exames.</p>
-        <div class="step-arrow">›</div>
+  <!-- ─── PASSO 2: Raça e Idade ────────────────────────────────────── -->
+  <div class="section-card" id="card-paciente">
+    <div class="card-head">
+      <div class="card-step-num">2</div>
+      <div class="card-head-text">
+        <h3>Raça e faixa etária</h3>
+        <small>Opcional · Raça predisposta +10 pts · Faixa etária compatível +6 pts</small>
       </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <h3>Análise por IA</h3>
-        <p>A ferramenta compara os valores com referências científicas validadas para cães e gatos e identifica padrões diagnósticos.</p>
-        <div class="step-arrow">›</div>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <h3>Diagnóstico diferencial</h3>
-        <p>Hipóteses ranqueadas, sugestão de conduta clínica e alerta de urgência — em segundos, com base em evidências.</p>
+    </div>
+    <div class="card-body">
+      <div class="patient-row">
+        <div class="field-group">
+          <div class="field-label">🕐 Faixa Etária</div>
+          <div class="age-pills">
+            <div class="age-pill" data-age="filhote" onclick="pickAge(this)">🐣 Filhote</div>
+            <div class="age-pill" data-age="jovem"   onclick="pickAge(this)">🐾 Jovem</div>
+            <div class="age-pill" data-age="adulto"  onclick="pickAge(this)">🦴 Adulto</div>
+            <div class="age-pill" data-age="idoso"   onclick="pickAge(this)">🏅 Idoso</div>
+          </div>
+        </div>
+        <div class="field-group">
+          <div class="field-label">🐩 Raça</div>
+          <div class="breed-wrap">
+            <input
+              class="breed-input" id="breed-input"
+              type="text" placeholder="Ex: Poodle, Golden Retriever..."
+              oninput="filterBreeds()" autocomplete="off">
+            <div class="breed-list" id="breed-list"></div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ── EXAMES ────────────────────────────────────────────────────────── -->
-<section id="exames">
-  <div class="section-inner">
-    <div class="section-divider"></div>
-    <h2 class="section-title">Ferramentas de Exame</h2>
-    <p class="section-sub">Selecione o exame que deseja analisar. Novos módulos em breve.</p>
-
-    <div class="exames-grid">
-
-      <!-- ECG — ATIVO -->
-      <div class="exame-card active" id="card-ecg" onclick="toggleECG()">
-        <div class="exame-top">
-          <div class="exame-icon">📈</div>
-          <div>
-            <h3>Eletrocardiograma</h3>
-            <p>ECG · Lead II</p>
-          </div>
-        </div>
-        <div class="exame-body">
-          <p>Insira os parâmetros do ECG e receba interpretação automática comparada com valores de referência por espécie.</p>
-          <div class="exame-tags">
-            <span class="tag tag-active">✓ Disponível</span>
-            <span class="tag tag-active">Cães &amp; Gatos</span>
-          </div>
-        </div>
+  <!-- ─── PASSO 3: Sinais Clínicos ─────────────────────────────────── -->
+  <div class="section-card" id="card-sint">
+    <div class="card-head">
+      <div class="card-step-num">3</div>
+      <div class="card-head-text">
+        <h3>Sinais clínicos observados</h3>
+        <small>Marque todos os sinais presentes no exame físico</small>
       </div>
-
-      <!-- Ecocardiograma — em breve -->
-      <div class="exame-card disabled">
-        <div class="exame-top" style="background:#1C2E40">
-          <div class="exame-icon" style="background:#2C4A6A">🫀</div>
-          <div>
-            <h3>Ecocardiograma</h3>
-            <p>2D · M-Mode · Doppler</p>
-          </div>
-        </div>
-        <div class="exame-body">
-          <p>Análise de medidas ecocardiográficas com avaliação de função sistólica e diastólica.</p>
-          <div class="exame-tags">
-            <span class="tag tag-soon">Em breve</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Pressão arterial — em breve -->
-      <div class="exame-card disabled">
-        <div class="exame-top" style="background:#1C2E40">
-          <div class="exame-icon" style="background:#2C4A6A">🩺</div>
-          <div>
-            <h3>Pressão Arterial</h3>
-            <p>Hipertensão · Hipotensão</p>
-          </div>
-        </div>
-        <div class="exame-body">
-          <p>Classificação e interpretação dos valores de pressão arterial sistêmica em pequenos animais.</p>
-          <div class="exame-tags">
-            <span class="tag tag-soon">Em breve</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Diagnóstico diferencial clínico — em breve -->
-      <div class="exame-card disabled">
-        <div class="exame-top" style="background:#1C2E40">
-          <div class="exame-icon" style="background:#2C4A6A">🔬</div>
-          <div>
-            <h3>Diagnóstico Diferencial</h3>
-            <p>Sinais clínicos + exames</p>
-          </div>
-        </div>
-        <div class="exame-body">
-          <p>Integração de múltiplos parâmetros clínicos para sugestão de diagnóstico diferencial completo.</p>
-          <div class="exame-tags">
-            <span class="tag tag-coming">Em desenvolvimento</span>
-          </div>
-        </div>
-      </div>
-
     </div>
-
-    <!-- ECG PANEL — abre ao clicar no card -->
-    <div id="ecg-panel">
-      <div class="ecg-panel-header">
-        <div>
-          <h2>📈 Análise de Eletrocardiograma</h2>
-          <p>Parâmetros do ECG em Lead II · 25 mm/s · 1 mV/cm · Cães e Gatos</p>
+    <div class="card-body">
+      <div class="search-row">
+        <div class="search-wrap">
+          <span class="search-ico">🔎</span>
+          <input type="text" id="q-sint" placeholder="Buscar sinal clínico..." oninput="renderSint()">
         </div>
-        <button class="btn-close-panel" onclick="closePanel()" title="Fechar">✕</button>
+        <span class="pill-count" id="cnt-sint">0 selecionados</span>
+        <a class="link-clear" onclick="clearSint()">Limpar</a>
       </div>
+      <div class="sint-grid" id="grid-sint"></div>
+    </div>
+  </div>
 
-      <div class="ecg-panel-body">
+  <!-- ─── PASSO 4: Exames Complementares ───────────────────────────── -->
+  <div class="section-card" id="card-exam">
+    <div class="card-head">
+      <div class="card-step-num">4</div>
+      <div class="card-head-text">
+        <h3>Exames complementares realizados</h3>
+        <small>Opcional · Selecione os exames que já foram feitos ou disponíveis</small>
+      </div>
+    </div>
+    <div class="card-body">
+      <div class="search-row" style="margin-bottom:14px">
+        <span style="font-size:0.84rem;color:var(--text-muted);flex:1">Selecionar exames refina a probabilidade diagnóstica em 40% do score.</span>
+        <span class="pill-count" id="cnt-exam">0 selecionados</span>
+        <a class="link-clear" onclick="clearExam()">Limpar</a>
+      </div>
+      <div class="exam-grid" id="grid-exam"></div>
 
-        <!-- FORMULÁRIO -->
-        <div>
-          <div class="form-card" style="margin-bottom:16px">
-            <div class="form-card-header">🐾 Dados do Paciente</div>
-            <div class="form-card-body">
-              <div class="form-grid">
-                <div>
-                  <label>Espécie *</label>
-                  <select id="species" onchange="updateRefs()">
-                    <option value="">Selecione...</option>
-                    <option value="dog">Cão</option>
-                    <option value="cat">Gato</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Porte <span class="unit">(cões)</span></label>
-                  <select id="size" onchange="updateRefs()">
-                    <option value="small">Pequeno / Toy (≤ 10 kg)</option>
-                    <option value="large">Médio / Grande (&gt; 10 kg)</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Nome / ID</label>
-                  <input type="text" id="patient_name" placeholder="Ex: Thor" />
-                </div>
-                <div>
-                  <label>Raça</label>
-                  <input type="text" id="breed" placeholder="Ex: Poodle" />
-                </div>
-                <div>
-                  <label>Idade</label>
-                  <input type="text" id="age" placeholder="Ex: 5 anos" />
-                </div>
-                <div>
-                  <label>Peso <span class="unit">(kg)</span></label>
-                  <input type="number" id="weight" placeholder="4.5" step="0.1" min="0" />
-                </div>
+      <!-- ── PAINEL ECG ──────────────────────────────────────── -->
+      <div id="ecg-panel">
+        <div class="ecg-panel-head">
+          <span style="font-size:1.4rem">📈</span>
+          <h4>Eletrocardiograma (ECG) — Inserir Parâmetros</h4>
+          <span class="ecg-sub">Lead II · Valores interpretados automaticamente</span>
+        </div>
+        <div class="ecg-body">
+
+          <!-- Porte (só para cão) -->
+          <div class="ecg-porte-row" id="ecg-porte-row">
+            <label>Porte do paciente:</label>
+            <select id="ecg-porte" onchange="interpretECG()">
+              <option value="dog_small">Cão pequeno / toy (≤ 15 kg)</option>
+              <option value="dog_large">Cão médio / grande (> 15 kg)</option>
+            </select>
+          </div>
+
+          <!-- Ritmo -->
+          <div class="ecg-row-title">🔁 Ritmo</div>
+          <div class="ecg-grid" style="grid-template-columns: 1fr;">
+            <div class="ecg-field">
+              <label>Ritmo cardíaco</label>
+              <select class="ecg-select" id="ecg-ritmo" onchange="interpretECG()">
+                <option value="">— Selecione —</option>
+                <option>Ritmo Sinusal Normal</option>
+                <option>Arritmia Sinusal Respiratória</option>
+                <option>Taquicardia Sinusal</option>
+                <option>Bradicardia Sinusal</option>
+                <option>Fibrilação Atrial</option>
+                <option>Flutter Atrial</option>
+                <option>Taquicardia Supraventricular</option>
+                <option>Taquicardia Ventricular</option>
+                <option>Fibrilação Ventricular</option>
+                <option>Complexos Ventriculares Prematuros (CVP)</option>
+                <option>Complexos Atriais Prematuros (CAP)</option>
+                <option>Bloqueio AV grau I</option>
+                <option>Bloqueio AV grau II (Mobitz I)</option>
+                <option>Bloqueio AV grau II (Mobitz II)</option>
+                <option>Bloqueio AV grau III (total)</option>
+                <option>Bloqueio de Ramo Esquerdo</option>
+                <option>Bloqueio de Ramo Direito</option>
+                <option>Ritmo de Marca-passo</option>
+                <option>Assistolia / Parada Cardíaca</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Frequência e Onda P -->
+          <div class="ecg-row-title">📊 Frequência & Onda P</div>
+          <div class="ecg-grid">
+            <div class="ecg-field">
+              <label>Frequência Cardíaca (bpm)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-fc" type="number" min="20" max="400"
+                  placeholder="ex: 130" oninput="interpretECG()">
+                <span class="ecg-status" id="st-fc"></span>
+              </div>
+            </div>
+            <div class="ecg-field">
+              <label>Amplitude Onda P (mV)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-p-amp" type="number" step="0.01" min="0" max="1"
+                  placeholder="ex: 0.25" oninput="interpretECG()">
+                <span class="ecg-status" id="st-p-amp"></span>
+              </div>
+            </div>
+            <div class="ecg-field">
+              <label>Duração Onda P (s)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-p-dur" type="number" step="0.01" min="0" max="0.2"
+                  placeholder="ex: 0.04" oninput="interpretECG()">
+                <span class="ecg-status" id="st-p-dur"></span>
+              </div>
+            </div>
+            <div class="ecg-field">
+              <label>Intervalo PR (s)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-pr" type="number" step="0.01" min="0" max="0.5"
+                  placeholder="ex: 0.10" oninput="interpretECG()">
+                <span class="ecg-status" id="st-pr"></span>
               </div>
             </div>
           </div>
 
-          <div class="form-card">
-            <div class="form-card-header">📈 Parâmetros do ECG</div>
-            <div class="form-card-body">
-              <div class="form-grid">
-
-                <div class="field-divider">Frequência e Ritmo</div>
-                <div>
-                  <label>FC * <span class="unit">(bpm)</span> <span class="ref" id="ref_hr"></span></label>
-                  <input type="number" id="hr" placeholder="120" min="0" max="400" oninput="liveCheck('hr')" />
-                </div>
-                <div>
-                  <label>Ritmo</label>
-                  <select id="rhythm">
-                    <option value="">Selecione...</option>
-                    <option value="sinus">Ritmo Sinusal</option>
-                    <option value="sinus_arrh">Arritmia Sinusal</option>
-                    <option value="sinus_brady">Bradicardia Sinusal</option>
-                    <option value="sinus_tachy">Taquicardia Sinusal</option>
-                    <option value="afib">Fibrilação Atrial</option>
-                    <option value="vt">Taquicardia Ventricular</option>
-                    <option value="avb1">Bloqueio AV 1º grau</option>
-                    <option value="avb2">Bloqueio AV 2º grau</option>
-                    <option value="avb3">Bloqueio AV 3º grau</option>
-                    <option value="lbbb">Bloqueio de Ramo Esquerdo</option>
-                    <option value="rbbb">Bloqueio de Ramo Direito</option>
-                    <option value="vpc">CVP / EV Ventriculares</option>
-                    <option value="apc">EV Supraventriculares</option>
-                    <option value="other">Outro</option>
-                  </select>
-                </div>
-
-                <div class="field-divider">Onda P</div>
-                <div>
-                  <label>Amplitude P <span class="unit">(mV)</span> <span class="ref" id="ref_p_amp"></span></label>
-                  <input type="number" id="p_amp" placeholder="0.25" step="0.01" min="0" oninput="liveCheck('p_amp')" />
-                </div>
-                <div>
-                  <label>Duração P <span class="unit">(s)</span> <span class="ref" id="ref_p_dur"></span></label>
-                  <input type="number" id="p_dur" placeholder="0.04" step="0.005" min="0" oninput="liveCheck('p_dur')" />
-                </div>
-                <div>
-                  <label>Morfologia P</label>
-                  <select id="p_morph">
-                    <option value="normal">Normal</option>
-                    <option value="wide">Alargada (P mitrale)</option>
-                    <option value="tall">Alta (P pulmonale)</option>
-                    <option value="biphasic">Bifásica</option>
-                    <option value="absent">Ausente</option>
-                    <option value="variable">Variável</option>
-                  </select>
-                </div>
-                <div></div>
-
-                <div class="field-divider">Intervalo PR e Complexo QRS</div>
-                <div>
-                  <label>Intervalo PR <span class="unit">(s)</span> <span class="ref" id="ref_pr"></span></label>
-                  <input type="number" id="pr" placeholder="0.10" step="0.005" min="0" oninput="liveCheck('pr')" />
-                </div>
-                <div>
-                  <label>Duração QRS <span class="unit">(s)</span> <span class="ref" id="ref_qrs"></span></label>
-                  <input type="number" id="qrs" placeholder="0.04" step="0.005" min="0" oninput="liveCheck('qrs')" />
-                </div>
-                <div>
-                  <label>Amplitude R <span class="unit">(mV)</span> <span class="ref" id="ref_r"></span></label>
-                  <input type="number" id="r_amp" placeholder="1.5" step="0.05" min="0" oninput="liveCheck('r_amp')" />
-                </div>
-                <div>
-                  <label>Eixo Elétrico <span class="unit">(°)</span> <span class="ref" id="ref_mea"></span></label>
-                  <input type="number" id="mea" placeholder="70" step="1" oninput="liveCheck('mea')" />
-                </div>
-
-                <div class="field-divider">Segmento ST e Onda T</div>
-                <div>
-                  <label>Segmento ST</label>
-                  <select id="st_seg">
-                    <option value="normal">Normal (linha de base)</option>
-                    <option value="depression">Depressão</option>
-                    <option value="elevation">Supradesnivelamento</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Desvio ST <span class="unit">(mV)</span> <span class="ref" id="ref_st"></span></label>
-                  <input type="number" id="st_dev" placeholder="0.05" step="0.01" min="0" oninput="liveCheck('st_dev')" />
-                </div>
-                <div>
-                  <label>Amplitude T <span class="unit">(mV)</span></label>
-                  <input type="number" id="t_amp" placeholder="0.3" step="0.01" />
-                </div>
-                <div>
-                  <label>Intervalo QT <span class="unit">(s)</span> <span class="ref" id="ref_qt"></span></label>
-                  <input type="number" id="qt" placeholder="0.20" step="0.005" min="0" oninput="liveCheck('qt')" />
-                </div>
-
-                <div class="full">
-                  <label>Notas adicionais</label>
-                  <input type="text" id="notes" placeholder="Artefatos, qualidade do traçado..." />
-                </div>
-
-                <button class="btn-analyze" onclick="analyze()">🔍 Analisar ECG</button>
-                <button class="btn-clear-form" onclick="clearForm()">✕ Limpar</button>
+          <!-- Complexo QRS -->
+          <div class="ecg-row-title">⚡ Complexo QRS</div>
+          <div class="ecg-grid">
+            <div class="ecg-field">
+              <label>Duração QRS (s)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-qrs-dur" type="number" step="0.01" min="0" max="0.3"
+                  placeholder="ex: 0.05" oninput="interpretECG()">
+                <span class="ecg-status" id="st-qrs-dur"></span>
+              </div>
+            </div>
+            <div class="ecg-field">
+              <label>Amplitude R (mV)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-r-amp" type="number" step="0.01" min="0" max="5"
+                  placeholder="ex: 2.0" oninput="interpretECG()">
+                <span class="ecg-status" id="st-r-amp"></span>
+              </div>
+            </div>
+            <div class="ecg-field">
+              <label>Eixo Elétrico Médio — MEA (°)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-mea" type="number" min="-180" max="360"
+                  placeholder="ex: +60" oninput="interpretECG()">
+                <span class="ecg-status" id="st-mea"></span>
               </div>
             </div>
           </div>
 
-          <!-- Tabela referências -->
-          <button class="ref-toggle-btn" onclick="toggleRef()">📋 Ver Valores de Referência</button>
-          <div class="ref-area" id="ref-area">
-            <table class="ref-table" style="margin-top:8px">
-              <tr><th>Parâmetro</th><th>Cão Pequeno</th><th>Cão Médio/Grande</th><th>Gato</th></tr>
-              <tr><td>FC (bpm)</td><td>80–180</td><td>70–160</td><td>120–240</td></tr>
-              <tr><td>Ampl. P (mV)</td><td>0.15–0.40</td><td>0.15–0.40</td><td>≤ 0.20</td></tr>
-              <tr><td>Dur. P (s)</td><td>0.02–0.04</td><td>0.02–0.04</td><td>≤ 0.04</td></tr>
-              <tr><td>PR (s)</td><td>0.06–0.13</td><td>0.06–0.13</td><td>0.05–0.09</td></tr>
-              <tr><td>QRS (s)</td><td>0.03–0.05</td><td>0.04–0.06</td><td>≤ 0.04</td></tr>
-              <tr><td>Ampl. R (mV)</td><td>0.9–2.8</td><td>1.2–3.0</td><td>≤ 0.9</td></tr>
-              <tr><td>ST (mV)</td><td>≤ 0.05</td><td>≤ 0.05</td><td>≤ 0.05</td></tr>
-              <tr><td>QT (s)</td><td>0.15–0.25</td><td>0.15–0.25</td><td>0.12–0.20</td></tr>
-              <tr><td>MEA (°)</td><td>+40 a +100</td><td>+40 a +100</td><td>0 a +160</td></tr>
-            </table>
-            <p class="ref-note">Fontes: Varshney (2020) Springer; Opti-ECG Vet Guide; PMC/NCBI ECG reference values in dogs (2020).</p>
-          </div>
-        </div>
-
-        <!-- RESULTADO -->
-        <div>
-          <div class="result-card">
-            <div class="result-card-header">📊 Resultado da Interpretação</div>
-            <div class="result-card-body">
-              <div id="ecg-placeholder">
-                <div class="big-icon">🫀</div>
-                <p>Preencha os parâmetros<br/>e clique em <strong>Analisar ECG</strong>.</p>
+          <!-- Repolarização -->
+          <div class="ecg-row-title">🌊 Repolarização</div>
+          <div class="ecg-grid">
+            <div class="ecg-field">
+              <label>Desvio Segmento ST (mV)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-st" type="number" step="0.01" min="-1" max="1"
+                  placeholder="ex: 0.00 (neg=depressão)" oninput="interpretECG()">
+                <span class="ecg-status" id="st-st"></span>
               </div>
-              <div id="ecg-result">
-                <div id="patient-summary" style="background:var(--gray);border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:12px"></div>
-                <div class="summary-chips">
-                  <div class="s-chip"><div class="n ok-color" id="cnt-ok">0</div><div class="l">Normal</div></div>
-                  <div class="s-chip"><div class="n w-color"  id="cnt-warn">0</div><div class="l">Limítrofe</div></div>
-                  <div class="s-chip"><div class="n d-color"  id="cnt-danger">0</div><div class="l">Alterado</div></div>
-                </div>
-                <div id="overall-badge" class="overall-badge"></div>
-                <table class="param-table">
-                  <thead><tr><th>Parâmetro</th><th>Valor</th><th>Ref.</th><th>Status</th></tr></thead>
-                  <tbody id="param-rows"></tbody>
-                </table>
-                <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">💡 Interpretação</div>
-                <div class="diag-list" id="diag-items"></div>
-                <div class="disclaimer">
-                  <span style="font-size:14px;flex-shrink:0">⚠️</span>
-                  <span>Auxílio diagnóstico — não substitui avaliação clínica ou laudo de cardiologista veterinário.</span>
-                </div>
-                <button onclick="window.print()" style="width:100%;margin-top:10px;background:var(--blue);color:white;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer">🖨️ Imprimir Laudo</button>
+            </div>
+            <div class="ecg-field">
+              <label>Relação T/R (onda T / onda R)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-tr" type="number" step="0.01" min="0" max="2"
+                  placeholder="ex: 0.20" oninput="interpretECG()">
+                <span class="ecg-status" id="st-tr"></span>
+              </div>
+            </div>
+            <div class="ecg-field">
+              <label>Intervalo QT (s)</label>
+              <div class="ecg-input-wrap">
+                <input class="ecg-input" id="ecg-qt" type="number" step="0.01" min="0" max="0.8"
+                  placeholder="ex: 0.20" oninput="interpretECG()">
+                <span class="ecg-status" id="st-qt"></span>
               </div>
             </div>
           </div>
+
+          <!-- Resultado da interpretação -->
+          <div class="ecg-result-box hidden" id="ecg-result-box">
+            <div class="ecg-result-title">📋 Interpretação dos Achados ECG</div>
+            <div class="ecg-finding-list" id="ecg-finding-list"></div>
+          </div>
+
+          <!-- Botão aplicar -->
+          <button class="ecg-apply-btn" onclick="applyECGBonus()">
+            ✅ Aplicar achados do ECG ao diagnóstico diferencial
+          </button>
+          <div class="ecg-applied-badge" id="ecg-applied-badge">
+            ✔ Achados do ECG incorporados ao diagnóstico
+          </div>
+
+        </div><!-- /ecg-body -->
+        <div class="ecg-refs">
+          📚 Valores de referência: Varshney (2020) Springer · Opti-ECG Veterinary Guide · PMC/NCBI (2020)
         </div>
+      </div><!-- /ecg-panel -->
 
-      </div><!-- end panel body -->
-    </div><!-- end ecg-panel -->
-
+    </div>
   </div>
-</section>
 
-<!-- ── SOBRE ──────────────────────────────────────────────────────────── -->
-<section id="sobre">
-  <div class="section-inner">
-    <div class="sobre-grid">
-      <div class="sobre-text">
-        <div class="section-divider"></div>
-        <h2>Por que a Cardiovet IA?</h2>
-        <p>O diagnóstico cardiovascular em pequenos animais é complexo, multifatorial e exige um cardiologista especialista — que não está disponível na grande maioria das cidades brasileiras.</p>
-        <p>A Cardiovet IA coloca o poder do diagnóstico diferencial baseado em evidências nas mãos de qualquer veterinário, em qualquer clínica, em qualquer cidade.</p>
+  <!-- ─── BOTÃO ANALISAR ────────────────────────────────────────────── -->
+  <div class="cta-wrap">
+    <button class="btn-analyze" onclick="analisar()">
+      <span style="font-size:1.3rem">🔬</span>
+      Analisar e Gerar Diagnóstico Diferencial
+    </button>
+  </div>
+
+  <!-- ─── RESULTADOS ────────────────────────────────────────────────── -->
+  <div class="results-wrap" id="results-wrap">
+    <div class="results-head">
+      <div class="results-title">📊 Diagnóstico Diferencial – Ranking de Probabilidade</div>
+      <div class="results-badge" id="results-badge">— resultados</div>
+    </div>
+    <div class="disclaimer-banner">
+      <span>⚠️</span>
+      <span><strong>Atenção:</strong> Esta ferramenta é um apoio ao raciocínio clínico e não substitui o julgamento do médico-veterinário. Os percentuais refletem compatibilidade com a base de dados clínica.</span>
+    </div>
+    <div id="results-list"></div>
+  </div>
+
+</div>
+
+  <!-- ─── COMPARATIVO ─────────────────────────────────────────────────── -->
+  <div class="compare-wrap" id="compare-wrap">
+    <div class="compare-card">
+      <div class="compare-head">
+        <div class="compare-icon-box">🔍</div>
+        <div class="compare-head-text">
+          <h3>Por que outras doenças ficaram à frente?</h3>
+          <small>Selecione a doença que você suspeita e veja a análise comparativa com os diagnósticos mais prováveis</small>
+        </div>
       </div>
-      <div>
-        <ul class="diff-list">
-          <li><div class="d-icon">🎯</div><div><strong>Foco exclusivo</strong> em cardiologia de pequenos animais — profundidade que soluções genéricas não têm.</div></li>
-          <li><div class="d-icon">📊</div><div><strong>Valores baseados em literatura</strong> científica veterinária validada (Varshney, PMC/NCBI, AniCura).</div></li>
-          <li><div class="d-icon">⚡</div><div><strong>Interpretação em segundos</strong> — interface projetada para o fluxo real de atendimento.</div></li>
-          <li><div class="d-icon">🔒</div><div><strong>100% no navegador</strong> — nenhum dado do paciente é enviado a servidores.</div></li>
-          <li><div class="d-icon">🗺️</div><div><strong>Roadmap:</strong> ECG (ativo) → Ecocardiograma → Pressão arterial → Diagnóstico diferencial integrado.</div></li>
-        </ul>
+      <div class="compare-body">
+        <div class="compare-select-label">Doença que você suspeita</div>
+        <select class="compare-select" id="compare-select" onchange="gerarComparativo()">
+          <option value="">— Selecione uma doença para comparar —</option>
+        </select>
+        <div class="compare-output" id="compare-output"></div>
       </div>
     </div>
   </div>
-</section>
 
-<!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
-<footer>
-  <strong>Cardiovet IA</strong> &nbsp;·&nbsp;
-  Diagnóstico cardiovascular para pequenos animais &nbsp;·&nbsp;
-  joaoantonio.negocios@gmail.com &nbsp;·&nbsp;
-  2025 &nbsp;·&nbsp;
-  <em>Ferramenta de apoio clínico — não substitui o médico-veterinário.</em>
+</div><!-- /page-body -->
+
+<!-- ═══════════════════════ FOOTER ══════════════════════════════════════ -->
+<footer class="site-footer">
+  CardioVet IA · Ferramenta de apoio ao diagnóstico cardiovascular veterinário · Uso exclusivo por profissionais habilitados
 </footer>
 
-<!-- ═══════════════════════════════════════════════════════ SCRIPT -->
 <script>
-const REFS = {
+/* ══════════════════════════════════════════════════════════════════════════
+   BASE DE DADOS
+══════════════════════════════════════════════════════════════════════════ */
+const DOENCAS = [
+  {id:1,  nome:"Persistência do Ducto Arterioso",    esp:"cão,gato", cat:"Congênita",      desc:"Comunicação persistente entre a aorta e a artéria pulmonar após o nascimento.",                      idade:"Filhotes",          racas:"Poodle, Pastor Alemão, Pomerânia",          ref:"Nelson & Couto; Ettinger"},
+  {id:2,  nome:"Estenose Pulmonar",                  esp:"cão,gato", cat:"Congênita",      desc:"Obstrução do fluxo de saída do ventrículo direito, geralmente em nível valvar.",                     idade:"Filhotes e jovens",  racas:"Bulldog Inglês, Boxer, Beagle",             ref:"Ettinger and Feldman"},
+  {id:3,  nome:"Estenose Subaórtica",                esp:"cão,gato", cat:"Congênita",      desc:"Obstrução subvalvar no trato de saída do ventrículo esquerdo.",                                      idade:"Filhotes e jovens",  racas:"Golden Retriever, Newfoundland, Boxer",     ref:"Nelson & Couto"},
+  {id:4,  nome:"Cardiomiopatia Dilatada",            esp:"cão",      cat:"Cardiomiopatia", desc:"Dilatação das câmaras cardíacas com redução da contratilidade sistólica.",                           idade:"Adultos a idosos",   racas:"Dobermann, Boxer, Dogue Alemão",           ref:"JVIM; Ettinger"},
+  {id:5,  nome:"Cardiomiopatia Hipertrófica",        esp:"gato",     cat:"Cardiomiopatia", desc:"Espessamento concêntrico do ventrículo esquerdo com disfunção diastólica.",                          idade:"Adultos",            racas:"Maine Coon, Persa, Ragdoll",                ref:"Feline Cardiology; JVIM"},
+  {id:6,  nome:"Cardiomiopatia Restritiva",          esp:"gato",     cat:"Cardiomiopatia", desc:"Rigidez ventricular por fibrose endocárdica/subendocárdica ou miocárdica.",                          idade:"Adultos a idosos",   racas:"Persa, SRD",                                ref:"Feline Cardiology"},
+  {id:7,  nome:"Doença Valvar Degenerativa Mitral",  esp:"cão",      cat:"Valvar",         desc:"Degeneração mixomatosa da valva mitral com regurgitação progressiva.",                               idade:"Idosos",             racas:"Cavalier King Charles, Dachshund, Poodle",  ref:"JVIM; Boswood 2016"},
+  {id:8,  nome:"Insuficiência Tricúspide",           esp:"cão,gato", cat:"Valvar",         desc:"Regurgitação tricúspide, incluindo casos congênitos como displasia valvar tricúspide.",              idade:"Variável",           racas:"Labrador Retriever, SRD",                   ref:"Ettinger and Feldman"},
+  {id:9,  nome:"Endocardite Infecciosa",             esp:"cão,gato", cat:"Valvar",         desc:"Colonização infecciosa de válvulas cardíacas e/ou endocárdio mural.",                               idade:"Adultos",            racas:"Pastor Alemão, Labrador Retriever",         ref:"Nelson & Couto"},
+  {id:10, nome:"Derrame Pericárdico",                esp:"cão",      cat:"Pericárdio",     desc:"Acúmulo de líquido no saco pericárdico podendo evoluir para tamponamento.",                          idade:"Adultos a idosos",   racas:"Golden Retriever, Pastor Alemão",           ref:"Ettinger and Feldman"},
+  {id:11, nome:"Tamponamento Cardíaco",              esp:"cão",      cat:"Pericárdio",     desc:"Comprometimento do enchimento diastólico por pressão intrapericárdica elevada.",                     idade:"Adultos a idosos",   racas:"Golden Retriever, Pastor Alemão",           ref:"Ettinger and Feldman"},
+  {id:12, nome:"Pericardite",                        esp:"cão,gato", cat:"Pericárdio",     desc:"Inflamação do pericárdio, podendo ser constritiva, infecciosa, inflamatória ou idiopática.",         idade:"Adultos",            racas:"Golden Retriever, São Bernardo",            ref:"Ettinger and Feldman"},
+  {id:13, nome:"Fibrilação Atrial",                  esp:"cão,gato", cat:"Arritmia",       desc:"Atividade elétrica atrial desorganizada com resposta ventricular irregular.",                        idade:"Adultos a idosos",   racas:"Dogue Alemão, Irish Wolfhound, Labrador",  ref:"JVIM; Ettinger"},
+  {id:14, nome:"Taquicardia Ventricular",            esp:"cão,gato", cat:"Arritmia",       desc:"Arritmia originada nos ventrículos com QRS largo e frequência elevada.",                             idade:"Variável",           racas:"Boxer, Dobermann, Pastor Alemão",           ref:"JVIM; Ettinger"},
+  {id:15, nome:"Bloqueio Atrioventricular",          esp:"cão,gato", cat:"Arritmia",       desc:"Falha ou atraso na condução elétrica entre átrios e ventrículos.",                                   idade:"Adultos a idosos",   racas:"Cocker Spaniel, Labrador, SRD",             ref:"Ettinger and Feldman"}
+];
+
+const AGE_MAP = {
+  filhote: ["filhotes","filhotes e jovens"],
+  jovem:   ["filhotes e jovens","jovens"],
+  adulto:  ["adultos","adultos a idosos","variável"],
+  idoso:   ["idosos","adultos a idosos","variável"]
+};
+
+const SINT = [
+  {id:1,s:"sopro_continuo_maquinaria",p:5},{id:1,s:"intolerancia_exercicio",p:3},{id:1,s:"taquipneia",p:3},{id:1,s:"dispneia",p:4},{id:1,s:"tosse",p:2},{id:1,s:"baixo_ganho_ponderal",p:3},{id:1,s:"fraqueza",p:2},{id:1,s:"edema_pulmonar",p:3},
+  {id:2,s:"intolerancia_exercicio",p:4},{id:2,s:"sincope",p:4},{id:2,s:"dispneia",p:3},{id:2,s:"ascite",p:2},{id:2,s:"cianose",p:3},{id:2,s:"sopro_sistolico_base_esquerda",p:5},{id:2,s:"fraqueza",p:3},
+  {id:3,s:"intolerancia_exercicio",p:4},{id:3,s:"sincope",p:5},{id:3,s:"fraqueza",p:3},{id:3,s:"arritmia",p:3},{id:3,s:"morte_subita",p:4},{id:3,s:"sopro_sistolico_base_direita",p:5},
+  {id:4,s:"dispneia",p:5},{id:4,s:"tosse",p:4},{id:4,s:"taquipneia",p:4},{id:4,s:"intolerancia_exercicio",p:4},{id:4,s:"letargia",p:4},{id:4,s:"sincope",p:3},{id:4,s:"pulsos_fracos",p:3},{id:4,s:"deficit_de_pulso",p:3},{id:4,s:"palidez_ou_cianose",p:3},{id:4,s:"extremidades_frias",p:3},{id:4,s:"tempo_perfusao_capilar_aumentado",p:3},{id:4,s:"caquexia_cardiaca",p:4},{id:4,s:"ascite",p:3},{id:4,s:"edema_periferico",p:3},
+  {id:5,s:"taquipneia",p:5},{id:5,s:"dispneia",p:5},{id:5,s:"edema_pulmonar",p:4},{id:5,s:"derrame_pleural",p:4},{id:5,s:"tosse",p:2},{id:5,s:"paralisia_membros_posteriores",p:4},{id:5,s:"dor_aguda_intensa",p:4},{id:5,s:"pulsos_femorais_ausentes_ou_fracos",p:4},{id:5,s:"sopro_cardiaco_sistolico",p:3},{id:5,s:"efusao_pleural",p:4},{id:5,s:"hipertensao",p:3},{id:5,s:"sincope",p:3},
+  {id:6,s:"dispneia",p:5},{id:6,s:"taquipneia",p:5},{id:6,s:"letargia",p:4},{id:6,s:"sopro_holossistolico_apice_esquerdo",p:3},{id:6,s:"intolerancia_exercicio",p:3},{id:6,s:"sincope",p:3},{id:6,s:"tosse_seca",p:2},{id:6,s:"caquexia",p:3},{id:6,s:"hiporexia",p:3},{id:6,s:"cianose",p:2},{id:6,s:"fraqueza",p:3},{id:6,s:"ascite",p:3},{id:6,s:"derrame_pleural",p:4},{id:6,s:"distensao_abdominal",p:3},{id:6,s:"efusao_pleural",p:4},{id:6,s:"anorexia",p:3},{id:6,s:"caquexia_cardiaca",p:3},
+  {id:7,s:"sopro_holossistolico_apice_esquerdo",p:5},{id:7,s:"intolerancia_exercicio",p:4},{id:7,s:"sincope",p:3},{id:7,s:"tosse_seca",p:3},{id:7,s:"caquexia",p:3},{id:7,s:"hiporexia",p:3},{id:7,s:"taquipneia",p:4},{id:7,s:"dispneia",p:4},{id:7,s:"edema_pulmonar",p:4},{id:7,s:"cianose",p:2},{id:7,s:"fraqueza",p:3},{id:7,s:"ascite",p:2},
+  {id:8,s:"sopro_holossistolico_apice_direito",p:5},{id:8,s:"arritmias_atriais",p:3},{id:8,s:"taquicardia_supraventricular",p:3},{id:8,s:"derrame_pleural",p:3},{id:8,s:"intolerancia_exercicio",p:3},{id:8,s:"distensao_abdominal",p:4},{id:8,s:"ascite",p:4},{id:8,s:"dispneia",p:3},{id:8,s:"efusao_pleural",p:3},
+  {id:9,s:"pirexia",p:4},{id:9,s:"apatia",p:4},{id:9,s:"dispneia",p:3},{id:9,s:"letargia",p:3},{id:9,s:"fraqueza",p:3},{id:9,s:"perda_de_peso",p:3},{id:9,s:"intolerancia_exercicio",p:3},{id:9,s:"dor_abdominal",p:2},{id:9,s:"sinais_gastrointestinais",p:2},{id:9,s:"paralisia_membros_pelvicos",p:3},{id:9,s:"claudicacao",p:3},{id:9,s:"edema_pulmonar",p:2},{id:9,s:"arritmias",p:3},{id:9,s:"sopro_diastolico_base_cardiaca",p:4},
+  {id:10,s:"abafamento_bulhas_cardiacas",p:5},{id:10,s:"pulso_paradoxal",p:4},{id:10,s:"veia_jugular_distendida",p:4},{id:10,s:"ascite",p:4},{id:10,s:"sincope",p:3},{id:10,s:"taquipneia_ou_dispneia",p:4},{id:10,s:"mucosas_palidas_ou_cianoticas",p:3},{id:10,s:"letargia",p:4},{id:10,s:"intolerancia_exercicio",p:3},{id:10,s:"anorexia_ou_hiporexia",p:3},
+  {id:11,s:"pulso_paradoxal",p:5},{id:11,s:"abafamento_bulhas_cardiacas",p:5},{id:11,s:"veia_jugular_distendida",p:5},{id:11,s:"ascite_subita",p:4},{id:11,s:"mucosas_palidas",p:4},{id:11,s:"tempo_perfusao_capilar_prolongado",p:4},{id:11,s:"taquicardia",p:4},{id:11,s:"taquipneia",p:4},{id:11,s:"sincope",p:4},
+  {id:12,s:"atrito_pericardico",p:5},{id:12,s:"veia_jugular_distendida",p:4},{id:12,s:"hipofonese_bulhas",p:4},{id:12,s:"pulso_paradoxal",p:4},{id:12,s:"refluxo_hepatojugular",p:4},{id:12,s:"hipotensao",p:3},{id:12,s:"ascite",p:4},{id:12,s:"taquipneia",p:3},{id:12,s:"tosse",p:2},{id:12,s:"fraqueza",p:3},{id:12,s:"sincope",p:3},{id:12,s:"colapso",p:3},
+  {id:13,s:"deficit_de_pulso",p:5},{id:13,s:"morte_subita",p:3},{id:13,s:"intolerancia_exercicio",p:4},{id:13,s:"taquicardia",p:4},{id:13,s:"ritmo_irregular",p:5},{id:13,s:"fraqueza",p:4},{id:13,s:"sincope",p:3},{id:13,s:"colapso",p:3},
+  {id:14,s:"deficit_de_pulso",p:4},{id:14,s:"morte_subita",p:4},{id:14,s:"taquicardia",p:5},{id:14,s:"ritmo_irregular",p:4},{id:14,s:"sincope",p:4},{id:14,s:"intolerancia_exercicio",p:3},{id:14,s:"letargia",p:3},{id:14,s:"fraqueza",p:3},{id:14,s:"colapso",p:4},
+  {id:15,s:"bradicardia_severa",p:5},{id:15,s:"sincope",p:5},{id:15,s:"intolerancia_exercicio",p:4},{id:15,s:"letargia",p:4},{id:15,s:"fraqueza",p:4},{id:15,s:"tosse",p:2},{id:15,s:"dificuldade_respiratoria",p:2}
+];
+
+const EXAM = [
+  {id:1,g:"ecocardiograma",p:5},{id:1,g:"doppler",p:5},{id:1,g:"radiografia",p:4},{id:1,g:"ecg",p:3},
+  {id:2,g:"ecocardiograma",p:5},{id:2,g:"doppler",p:5},{id:2,g:"radiografia",p:4},{id:2,g:"ecg",p:3},
+  {id:3,g:"ecocardiograma",p:5},{id:3,g:"doppler",p:5},{id:3,g:"radiografia",p:3},{id:3,g:"ecg",p:3},{id:3,g:"troponina",p:3},
+  {id:4,g:"ecocardiograma",p:5},{id:4,g:"radiografia",p:5},{id:4,g:"ecg",p:4},{id:4,g:"ntprobnp",p:4},
+  {id:5,g:"ecocardiograma",p:5},{id:5,g:"radiografia",p:4},{id:5,g:"ecg",p:2},{id:5,g:"ntprobnp",p:4},
+  {id:6,g:"ecocardiograma",p:5},{id:6,g:"radiografia",p:4},{id:6,g:"ecg",p:3},{id:6,g:"ntprobnp",p:4},
+  {id:7,g:"ecocardiograma",p:5},{id:7,g:"doppler",p:5},{id:7,g:"radiografia",p:4},{id:7,g:"ntprobnp",p:4},{id:7,g:"ecg",p:2},
+  {id:8,g:"ecocardiograma",p:5},{id:8,g:"doppler",p:5},{id:8,g:"radiografia",p:4},{id:8,g:"ecg",p:2},
+  {id:9,g:"ecocardiograma",p:5},{id:9,g:"doppler",p:4},{id:9,g:"hemocultura",p:5},{id:9,g:"antibiograma",p:4},{id:9,g:"hemograma",p:3},{id:9,g:"bioquimica",p:3},{id:9,g:"radiografia",p:2},{id:9,g:"ecg",p:2},
+  {id:10,g:"ecocardiograma",p:5},{id:10,g:"ecg",p:4},{id:10,g:"radiografia",p:4},
+  {id:11,g:"ecocardiograma",p:5},{id:11,g:"ecg",p:5},{id:11,g:"radiografia",p:4},
+  {id:12,g:"ecocardiograma",p:5},{id:12,g:"ecg",p:3},{id:12,g:"radiografia",p:4},{id:12,g:"hemograma",p:3},
+  {id:13,g:"ecg",p:5},{id:13,g:"ecocardiograma",p:4},{id:13,g:"radiografia",p:3},{id:13,g:"ntprobnp",p:3},
+  {id:14,g:"ecg",p:5},{id:14,g:"holter",p:4},{id:14,g:"ecocardiograma",p:3},{id:14,g:"troponina",p:3},{id:14,g:"ntprobnp",p:3},
+  {id:15,g:"ecg",p:5},{id:15,g:"holter",p:4},{id:15,g:"ecocardiograma",p:2},{id:15,g:"radiografia",p:2}
+];
+
+const EXAM_GROUPS = [
+  {id:"ecocardiograma", label:"Ecocardiograma",         icon:"🫀", desc:"Avaliação estrutural e funcional do coração por ultrassom"},
+  {id:"doppler",        label:"Ecocardiograma Doppler",  icon:"📡", desc:"Avaliação dos fluxos intracardíacos e gradientes de pressão"},
+  {id:"ecg",            label:"Eletrocardiograma (ECG)", icon:"📈", desc:"Registro da atividade elétrica cardíaca e arritmias"},
+  {id:"holter",         label:"Holter 24h",              icon:"⌚", desc:"Monitorização eletrocardiográfica ambulatorial contínua"},
+  {id:"radiografia",    label:"Radiografia Torácica",    icon:"🩻", desc:"Avaliação da silhueta cardíaca e campos pulmonares"},
+  {id:"ntprobnp",       label:"NT-proBNP / BNP",         icon:"📊", desc:"Biomarcador de insuficiência cardíaca e sobrecarga"},
+  {id:"troponina",      label:"Troponina Cardíaca",      icon:"🧪", desc:"Marcador de lesão e necrose miocárdica"},
+  {id:"hemograma",      label:"Hemograma Completo",      icon:"🩸", desc:"Avaliação das células sanguíneas e perfil inflamatório"},
+  {id:"bioquimica",     label:"Bioquímica Sérica",       icon:"🔬", desc:"Perfil metabólico: função renal, hepática e eletrólitos"},
+  {id:"hemocultura",    label:"Hemocultura",             icon:"🧫", desc:"Cultura sanguínea para identificação de agentes infecciosos"},
+  {id:"antibiograma",   label:"Antibiograma",            icon:"💊", desc:"Teste de sensibilidade antimicrobiana após hemocultura"},
+];
+
+const ALL_BREEDS = [...new Set(
+  DOENCAS.flatMap(d => d.racas ? d.racas.split(',').map(r => r.trim()) : [])
+)].filter(r => r && r !== 'SRD').sort();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ESTADO
+══════════════════════════════════════════════════════════════════════════ */
+let especie  = null;
+let idadeSel = null;
+let racaSel  = '';
+const selSint = new Set();
+const selExam = new Set();
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HELPERS
+══════════════════════════════════════════════════════════════════════════ */
+function fmtLabel(s) {
+  return s.replace(/_/g,' ').replace(/\b\w/g, c => c.toUpperCase());
+}
+
+function uniqueSint() {
+  const m = new Map();
+  SINT.forEach(r => { if (!m.has(r.s)) m.set(r.s, fmtLabel(r.s)); });
+  return [...m.entries()].sort((a,b) => a[1].localeCompare(b[1]));
+}
+
+function updateSteppers() {
+  const s1 = document.getElementById('st1');
+  const s2 = document.getElementById('st2');
+  const s3 = document.getElementById('st3');
+  const s4 = document.getElementById('st4');
+  function mark(el, done) {
+    el.classList.toggle('done', done);
+  }
+  mark(s1, !!especie);
+  mark(s2, !!(idadeSel || racaSel));
+  mark(s3, selSint.size > 0);
+  mark(s4, selExam.size > 0);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ESPÉCIE
+══════════════════════════════════════════════════════════════════════════ */
+function pickEspecie(btn) {
+  document.querySelectorAll('.species-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  especie = btn.getAttribute('data-esp');
+  updateSteppers();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   IDADE
+══════════════════════════════════════════════════════════════════════════ */
+function pickAge(el) {
+  const val = el.getAttribute('data-age');
+  if (idadeSel === val) {
+    // deselect
+    el.classList.remove('active');
+    idadeSel = null;
+  } else {
+    document.querySelectorAll('.age-pill').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    idadeSel = val;
+  }
+  updateSteppers();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   RAÇA
+══════════════════════════════════════════════════════════════════════════ */
+function filterBreeds() {
+  const q = document.getElementById('breed-input').value.trim();
+  racaSel = q;
+  const box = document.getElementById('breed-list');
+  if (!q) { box.classList.remove('open'); updateSteppers(); return; }
+  const matches = ALL_BREEDS.filter(b => b.toLowerCase().includes(q.toLowerCase())).slice(0, 8);
+  if (!matches.length) { box.classList.remove('open'); updateSteppers(); return; }
+  box.innerHTML = matches.map(b =>
+    `<div class="breed-opt" onmousedown="selectBreed('${b}')">${b}</div>`
+  ).join('');
+  box.classList.add('open');
+  updateSteppers();
+}
+
+function selectBreed(name) {
+  document.getElementById('breed-input').value = name;
+  racaSel = name;
+  document.getElementById('breed-list').classList.remove('open');
+  updateSteppers();
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.breed-wrap'))
+    document.getElementById('breed-list').classList.remove('open');
+});
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SINTOMAS
+══════════════════════════════════════════════════════════════════════════ */
+function renderSint() {
+  const q = (document.getElementById('q-sint').value || '').toLowerCase();
+  const items = uniqueSint().filter(([k,v]) => !q || v.toLowerCase().includes(q));
+  const grid = document.getElementById('grid-sint');
+  if (!items.length) {
+    grid.innerHTML = `<div style="grid-column:1/-1;padding:16px;color:var(--text-muted);font-size:0.85rem;text-align:center;">Nenhum resultado para "${q}"</div>`;
+    return;
+  }
+  grid.innerHTML = items.map(([key, label]) =>
+    `<div class="sint-item${selSint.has(key)?' on':''}" data-k="${key}">
+       <div class="chk-box"></div><span>${label}</span>
+     </div>`
+  ).join('');
+  grid.querySelectorAll('.sint-item').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      const k = this.getAttribute('data-k');
+      selSint.has(k) ? selSint.delete(k) : selSint.add(k);
+      const n = selSint.size;
+      document.getElementById('cnt-sint').textContent = n + (n === 1 ? ' selecionado' : ' selecionados');
+      this.classList.toggle('on', selSint.has(k));
+      updateSteppers();
+    });
+  });
+}
+
+function clearSint() {
+  selSint.clear();
+  document.getElementById('cnt-sint').textContent = '0 selecionados';
+  renderSint();
+  updateSteppers();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   EXAMES
+══════════════════════════════════════════════════════════════════════════ */
+function renderExam() {
+  document.getElementById('grid-exam').innerHTML = EXAM_GROUPS.map(g =>
+    `<div class="exam-card${selExam.has(g.id)?' on':''}" data-eid="${g.id}">
+       <div class="exam-ico">${g.icon}</div>
+       <div class="exam-info">
+         <div class="exam-name">${g.label}</div>
+         <div class="exam-hint">${g.desc}</div>
+       </div>
+       <div class="exam-dot"></div>
+     </div>`
+  ).join('');
+  document.getElementById('grid-exam').querySelectorAll('.exam-card').forEach(el => {
+    el.addEventListener('click', function(e) {
+      e.preventDefault(); e.stopPropagation();
+      const id = this.getAttribute('data-eid');
+      selExam.has(id) ? selExam.delete(id) : selExam.add(id);
+      const n = selExam.size;
+      document.getElementById('cnt-exam').textContent = n + (n === 1 ? ' selecionado' : ' selecionados');
+      this.classList.toggle('on', selExam.has(id));
+      // Painel ECG abre/fecha ao clicar no card de ECG
+      if (id === 'ecg') {
+        const panel = document.getElementById('ecg-panel');
+        if (selExam.has('ecg')) {
+          panel.classList.add('open');
+          // Ajusta seletor de porte conforme espécie
+          const porteRow = document.getElementById('ecg-porte-row');
+          porteRow.style.display = (especie === 'gato') ? 'none' : 'flex';
+          setTimeout(() => panel.scrollIntoView({behavior:'smooth', block:'nearest'}), 80);
+        } else {
+          panel.classList.remove('open');
+          // Limpa bonus ao desmarcar
+          window._ecgBonus = {};
+          document.getElementById('ecg-applied-badge').classList.remove('show');
+        }
+      }
+      updateSteppers();
+    });
+  });
+}
+
+function clearExam() {
+  selExam.clear();
+  document.getElementById('cnt-exam').textContent = '0 selecionados';
+  renderExam();
+  updateSteppers();
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   SCORING
+══════════════════════════════════════════════════════════════════════════ */
+function matchIdade(d) {
+  if (!idadeSel) return false;
+  const cats = AGE_MAP[idadeSel] || [];
+  return cats.some(c => d.idade.toLowerCase().includes(c));
+}
+
+function matchRaca(d) {
+  if (!racaSel) return false;
+  return d.racas.toLowerCase().includes(racaSel.toLowerCase());
+}
+
+function calcular() {
+  return DOENCAS.map(d => {
+    if (especie && !d.esp.split(',').map(s=>s.trim()).includes(especie)) return null;
+
+    const sdList = SINT.filter(r => r.id === d.id);
+    const maxS   = sdList.reduce((a,r) => a+r.p, 0);
+    let scoreS = 0, matchS = [];
+    sdList.forEach(r => { if (selSint.has(r.s)) { scoreS += r.p; matchS.push(fmtLabel(r.s)); } });
+    const pctS = maxS > 0 ? scoreS / maxS : 0;
+
+    const exList = EXAM.filter(r => r.id === d.id);
+    const maxE   = exList.reduce((a,r) => a+r.p, 0);
+    let scoreE = 0, matchE = [];
+    selExam.forEach(gid => {
+      const row = exList.find(r => r.g === gid);
+      if (row) { scoreE += row.p; matchE.push(EXAM_GROUPS.find(g=>g.id===gid)?.label || gid); }
+    });
+    const pctE = maxE > 0 ? scoreE / maxE : 0;
+
+    const bRaca  = matchRaca(d);
+    const bIdade = matchIdade(d);
+
+    let pctBase = selExam.size === 0 ? pctS : (pctS * 0.6 + pctE * 0.4);
+    let bonus = 0;
+    if (bRaca)  bonus += 0.10;
+    if (bIdade) bonus += 0.06;
+    // Bonus do ECG: achados específicos reforçam doenças associadas
+    const ecgBonus = (window._ecgBonus && window._ecgBonus[d.id]) || 0;
+    const pct = Math.min(100, Math.round((pctBase + bonus) * 100) + ecgBonus);
+
+    return { d, pct, matchS, matchE, bRaca, bIdade };
+  })
+  .filter(Boolean)
+  .sort((a,b) => b.pct - a.pct || b.matchS.length - a.matchS.length);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ANALISAR
+══════════════════════════════════════════════════════════════════════════ */
+function analisar() {
+  if (selSint.size === 0 && selExam.size === 0) {
+    alert('Selecione pelo menos um sinal clínico ou exame para analisar.');
+    return;
+  }
+
+  const res = calcular();
+  const lista = document.getElementById('results-list');
+  const badge = document.getElementById('results-badge');
+  badge.textContent = res.length + ' resultado' + (res.length !== 1 ? 's' : '');
+
+  if (!res.length) {
+    lista.innerHTML = `<div style="text-align:center;padding:40px;color:var(--text-muted);">Nenhuma doença encontrada para a espécie selecionada.</div>`;
+  } else {
+    lista.innerHTML = res.map((r, i) => {
+      const rankClass = i===0?'rank-1':i===1?'rank-2':i===2?'rank-3':'rank-x';
+      const rankNum   = i===0?'🥇':i===1?'🥈':i===2?'🥉':`#${i+1}`;
+      const rtag = i===0
+        ? `<span class="dtag dt-rank1">⭐ Mais Provável</span>`
+        : i===1 ? `<span class="dtag dt-rank2">2º Provável</span>` : '';
+
+      const esps  = r.d.esp.split(',').map(s => `<span class="dtag dt-sp">${s.trim()}</span>`).join('');
+      const atag  = r.bIdade ? `<span class="dtag dt-age">🕐 Idade compatível</span>` : '';
+      const btag  = r.bRaca  ? `<span class="dtag dt-breed">🐾 Raça predisposta</span>` : '';
+      const stags = r.matchS.map(s=>`<span class="chip-s">🩺 ${s}</span>`).join('');
+      const etags = r.matchE.map(e=>`<span class="chip-e">🔬 ${e}</span>`).join('');
+
+      return `
+      <div class="d-card ${rankClass}">
+        <div class="d-top">
+          <div class="d-rank">${rankNum}</div>
+          <div class="d-main">
+            <div class="d-name">${r.d.nome}</div>
+            <div class="d-tags">
+              <span class="dtag dt-cat">${r.d.cat}</span>
+              ${esps}${rtag}${atag}${btag}
+            </div>
+          </div>
+          <div class="d-score-area">
+            <div class="d-pct">${r.pct}%</div>
+            <div class="d-pct-lbl">compatibilidade</div>
+          </div>
+        </div>
+        <div class="d-bar-wrap">
+          <div class="d-bar-bg"><div class="d-bar-fill" style="width:${r.pct}%"></div></div>
+        </div>
+        <div class="d-toggle">
+          <span>Ver detalhes clínicos</span>
+          <span class="toggle-arrow">▼</span>
+        </div>
+        <div class="d-expand">
+          <p class="d-desc-text">${r.d.desc}</p>
+          <div class="info-row">
+            <div class="info-box">
+              <div class="info-box-label">🕐 Faixa etária mais comum</div>
+              <div class="info-box-val">${r.d.idade || '—'}</div>
+            </div>
+            <div class="info-box">
+              <div class="info-box-label">🐾 Raças mais acometidas</div>
+              <div class="info-box-val">${r.d.racas || '—'}</div>
+            </div>
+          </div>
+          <div class="ref-line">📚 Referência científica: <strong>${r.d.ref || '—'}</strong></div>
+          ${stags
+            ? `<div class="match-section">
+                <div class="match-label">✅ Sinais clínicos compatíveis (${r.matchS.length})</div>
+                <div class="match-chips">${stags}</div>
+               </div>`
+            : `<div class="match-section"><div class="match-label" style="color:#bbb;">Nenhum sinal clínico compatível selecionado</div></div>`
+          }
+          ${etags
+            ? `<div class="match-section">
+                <div class="match-label">✅ Exames com achados esperados (${r.matchE.length})</div>
+                <div class="match-chips">${etags}</div>
+               </div>`
+            : ''
+          }
+        </div>
+      </div>`;
+    }).join('');
+
+    lista.querySelectorAll('.d-card').forEach(card => {
+      card.querySelector('.d-toggle').addEventListener('click', function(e) {
+        e.stopPropagation();
+        card.classList.toggle('open');
+      });
+    });
+  }
+
+  const wrap = document.getElementById('results-wrap');
+  wrap.classList.add('visible');
+  document.getElementById('st5').classList.add('active');
+
+  // Populate compare selector
+  const sel = document.getElementById('compare-select');
+  sel.innerHTML = '<option value="">— Selecione uma doença para comparar —</option>';
+  res.forEach((r, i) => {
+    const opt = document.createElement('option');
+    opt.value = r.d.id;
+    opt.textContent = `${i===0?'🥇':i===1?'🥈':i===2?'🥉':'#'+(i+1)} ${r.d.nome} — ${r.pct}%`;
+    sel.appendChild(opt);
+  });
+  document.getElementById('compare-output').classList.remove('show');
+  document.getElementById('compare-wrap').classList.add('visible');
+
+  // Store results globally for comparativo
+  window._lastResults = res;
+
+  setTimeout(() => wrap.scrollIntoView({behavior:'smooth', block:'start'}), 80);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   COMPARATIVO
+══════════════════════════════════════════════════════════════════════════ */
+function gerarComparativo() {
+  const selId = parseInt(document.getElementById('compare-select').value);
+  const output = document.getElementById('compare-output');
+
+  if (!selId || !window._lastResults) {
+    output.classList.remove('show');
+    return;
+  }
+
+  const res = window._lastResults;
+  const target = res.find(r => r.d.id === selId);
+  if (!target) { output.classList.remove('show'); return; }
+
+  // Rivals: diseases that scored higher than target (up to 5)
+  const rivals = res.filter(r => r.d.id !== selId && r.pct >= target.pct - 5)
+                    .slice(0, 5);
+
+  // Build target header
+  const rankIdx = res.findIndex(r => r.d.id === selId);
+  const rankEmoji = rankIdx === 0 ? '🥇' : rankIdx === 1 ? '🥈' : rankIdx === 2 ? '🥉' : `#${rankIdx+1}`;
+
+  // Signs the target disease has that are NOT present in the patient
+  const targetSintRows = SINT.filter(r => r.id === selId);
+  const ausentes = targetSintRows
+    .filter(r => !selSint.has(r.s))
+    .sort((a,b) => b.p - a.p)
+    .slice(0, 6)
+    .map(r => fmtLabel(r.s));
+
+  // Exams the target disease relies on that weren't selected
+  const targetExamRows = EXAM.filter(r => r.id === selId);
+  const examesAusentes = targetExamRows
+    .filter(r => !selExam.has(r.g))
+    .sort((a,b) => b.p - a.p)
+    .slice(0, 4)
+    .map(r => EXAM_GROUPS.find(g => g.id === r.g)?.label || r.g);
+
+  // Age / breed mismatch
+  const ageOk   = target.bIdade;
+  const breedOk = target.bRaca;
+
+  // Build rival comparisons
+  function buildRival(r, idx) {
+    const delta = r.pct - target.pct;
+    const deltaClass = delta > 0 ? 'delta-above' : delta < 0 ? 'delta-below' : 'delta-same';
+    const deltaText  = delta > 0 ? `+${delta}%` : delta < 0 ? `${delta}%` : 'Empate';
+    const rIdx = res.findIndex(x => x.d.id === r.d.id);
+    const rEmoji = rIdx===0?'🥇':rIdx===1?'🥈':rIdx===2?'🥉':`#${rIdx+1}`;
+
+    // Signs present in patient that match rival but NOT target
+    const rivalSintKeys = new Set(SINT.filter(x => x.id === r.d.id).map(x => x.s));
+    const targetSintKeys = new Set(SINT.filter(x => x.id === selId).map(x => x.s));
+    const exclusiveToRival = [...selSint].filter(k => rivalSintKeys.has(k) && !targetSintKeys.has(k));
+
+    // Signs present in patient that match BOTH
+    const shared = [...selSint].filter(k => rivalSintKeys.has(k) && targetSintKeys.has(k));
+
+    // Signs present in patient that match target but NOT rival
+    const exclusiveToTarget = [...selSint].filter(k => targetSintKeys.has(k) && !rivalSintKeys.has(k));
+
+    // Exam differences
+    const rivalExamKeys = new Set(EXAM.filter(x => x.id === r.d.id).map(x => x.g));
+    const targetExamKeys = new Set(EXAM.filter(x => x.id === selId).map(x => x.g));
+    const examExclRival = [...selExam].filter(k => rivalExamKeys.has(k) && !targetExamKeys.has(k));
+    const examExclTarget = [...selExam].filter(k => targetExamKeys.has(k) && !rivalExamKeys.has(k));
+
+    // Build narrative sentence
+    let narrative = '';
+    if (delta > 0) {
+      const parts = [];
+      if (exclusiveToRival.length > 0)
+        parts.push(`${exclusiveToRival.length} sinal(is) presente(s) no paciente apontam mais especificamente para <strong>${r.d.nome}</strong>`);
+      if (examExclRival.length > 0)
+        parts.push(`${examExclRival.length} exame(s) selecionado(s) têm maior relevância diagnóstica para <strong>${r.d.nome}</strong>`);
+      if (r.bRaca && !breedOk)
+        parts.push(`a raça <em>${racaSel}</em> é predisposta para <strong>${r.d.nome}</strong>, mas não para <strong>${target.d.nome}</strong>`);
+      if (r.bIdade && !ageOk)
+        parts.push(`a faixa etária selecionada (${idadeSel}) é mais típica de <strong>${r.d.nome}</strong>`);
+      if (ausentes.length > 0 && exclusiveToRival.length === 0)
+        parts.push(`sinais esperados de <strong>${target.d.nome}</strong> (como ${ausentes.slice(0,2).join(', ')}) não estão presentes`);
+      narrative = parts.length > 0
+        ? parts.join('; ') + '.'
+        : `<strong>${r.d.nome}</strong> acumulou mais pontos com os achados informados.`;
+    } else if (delta < 0) {
+      narrative = `<strong>${target.d.nome}</strong> ficou à frente desta doença com os achados atuais.`;
+    } else {
+      narrative = `Ambas as doenças têm compatibilidade igual com os achados informados.`;
+    }
+
+    const excRivalChips = exclusiveToRival.slice(0,5).map(k => `<span class="reason-chip chip-red">🔴 ${fmtLabel(k)}</span>`).join('');
+    const sharedChips   = shared.slice(0,5).map(k => `<span class="reason-chip chip-grey">⚪ ${fmtLabel(k)}</span>`).join('');
+    const exclTChips    = exclusiveToTarget.slice(0,4).map(k => `<span class="reason-chip chip-green">🟢 ${fmtLabel(k)}</span>`).join('');
+    const examRChips    = examExclRival.map(k => `<span class="reason-chip chip-blue">🔵 ${EXAM_GROUPS.find(g=>g.id===k)?.label||k}</span>`).join('');
+
+    return `
+    <div class="co-rival${idx===0?' open':''}">
+      <div class="co-rival-head" onclick="this.closest('.co-rival').classList.toggle('open')">
+        <div class="co-rival-rank">${rEmoji}</div>
+        <div class="co-rival-info">
+          <div class="co-rival-name">${r.d.nome}</div>
+          <div class="co-rival-sub">${r.d.cat} · ${r.pct}% compatibilidade</div>
+        </div>
+        <div class="co-rival-delta ${deltaClass}">${deltaText} vs sua suspeita</div>
+        <div class="co-rival-arrow">▼</div>
+      </div>
+      <div class="co-rival-body">
+        <div class="co-summary">🧠 ${narrative}</div>
+        ${excRivalChips ? `
+        <div class="reason-group" style="margin-top:12px">
+          <div class="reason-title" style="color:#c62828">🔴 Sinais presentes que favorecem <em>${r.d.nome}</em> sobre sua suspeita</div>
+          <div class="reason-list">${excRivalChips}</div>
+        </div>` : ''}
+        ${exclTChips ? `
+        <div class="reason-group" style="margin-top:10px">
+          <div class="reason-title" style="color:var(--green)">🟢 Sinais que apoiam sua suspeita (${target.d.nome})</div>
+          <div class="reason-list">${exclTChips}</div>
+        </div>` : ''}
+        ${sharedChips ? `
+        <div class="reason-group" style="margin-top:10px">
+          <div class="reason-title" style="color:var(--text-muted)">⚪ Sinais em comum (não diferenciam)</div>
+          <div class="reason-list">${sharedChips}</div>
+        </div>` : ''}
+        ${examRChips ? `
+        <div class="reason-group" style="margin-top:10px">
+          <div class="reason-title" style="color:var(--blue)">🔵 Exames que reforçam ${r.d.nome}</div>
+          <div class="reason-list">${examRChips}</div>
+        </div>` : ''}
+      </div>
+    </div>`;
+  }
+
+  // Missing signs block
+  const missingSintHtml = ausentes.length > 0
+    ? `<div class="reason-group" style="margin-top:0">
+        <div class="reason-title" style="color:var(--accent)">⚠️ Sinais esperados de ${target.d.nome} não observados no paciente</div>
+        <div class="reason-list">${ausentes.map(s=>`<span class="reason-chip chip-orange">⚠️ ${s}</span>`).join('')}</div>
+       </div>` : '';
+  const missingExamHtml = examesAusentes.length > 0
+    ? `<div class="reason-group" style="margin-top:10px">
+        <div class="reason-title" style="color:var(--text-muted)">📋 Exames relevantes para ${target.d.nome} ainda não realizados</div>
+        <div class="reason-list">${examesAusentes.map(e=>`<span class="reason-chip chip-grey">📋 ${e}</span>`).join('')}</div>
+       </div>` : '';
+  const ageMismatch = idadeSel && !ageOk
+    ? `<div class="reason-chip chip-orange" style="margin-top:8px;display:inline-block">⚠️ Faixa etária "${idadeSel}" não é a mais típica desta doença (${target.d.idade})</div>` : '';
+  const breedMismatch = racaSel && !breedOk
+    ? `<div class="reason-chip chip-orange" style="margin-top:8px;display:inline-block;margin-left:5px">⚠️ Raça "${racaSel}" não está entre as predispostas (${target.d.racas})</div>` : '';
+
+  const hasMissing = ausentes.length > 0 || examesAusentes.length > 0 || (idadeSel && !ageOk) || (racaSel && !breedOk);
+
+  output.innerHTML = `
+    <div class="co-target">
+      <div class="co-target-icon">🎯</div>
+      <div class="co-target-text">
+        <div class="co-target-label">Sua suspeita diagnóstica · ${rankEmoji} no ranking</div>
+        <div class="co-target-name">${target.d.nome}</div>
+        <div style="font-size:0.78rem;opacity:0.7;margin-top:2px">${target.d.cat} · ${target.d.desc.slice(0,70)}…</div>
+      </div>
+      <div class="co-target-score">
+        <div class="co-target-pct">${target.pct}%</div>
+        <div class="co-target-pct-lbl">compatibilidade</div>
+      </div>
+    </div>
+
+    ${hasMissing ? `
+    <div class="co-section-title">Por que o score desta doença pode estar subestimado</div>
+    ${missingSintHtml}${missingExamHtml}
+    <div style="margin-bottom:18px">${ageMismatch}${breedMismatch}</div>` : ''}
+
+    ${rivals.length > 0 ? `
+    <div class="co-section-title">Comparativo com outras doenças no ranking</div>
+    ${rivals.map((r, i) => buildRival(r, i)).join('')}
+    ` : '<div class="no-rivals">Esta doença é a melhor classificada no ranking atual.</div>'}
+  `;
+
+  output.classList.add('show');
+  setTimeout(() => output.scrollIntoView({behavior:'smooth', block:'start'}), 80);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   ECG — VALORES DE REFERÊNCIA (Lead II, Varshney 2020 / Opti-ECG / NCBI)
+══════════════════════════════════════════════════════════════════════════ */
+const ECG_REFS = {
   dog_small: {
-    hr:    { min:80,   max:180,  unit:'bpm', label:'80–180 bpm' },
-    p_amp: { min:0.15, max:0.40, unit:'mV',  label:'0.15–0.40 mV' },
-    p_dur: { min:0.02, max:0.04, unit:'s',   label:'0.02–0.04 s' },
-    pr:    { min:0.06, max:0.13, unit:'s',   label:'0.06–0.13 s' },
-    qrs:   { min:0.03, max:0.05, unit:'s',   label:'0.03–0.05 s' },
-    r_amp: { min:0.9,  max:2.8,  unit:'mV',  label:'0.9–2.8 mV' },
-    st_dev:{ min:0,    max:0.05, unit:'mV',  label:'≤ 0.05 mV' },
-    qt:    { min:0.15, max:0.25, unit:'s',   label:'0.15–0.25 s' },
-    mea:   { min:40,   max:100,  unit:'°',   label:'+40° a +100°' },
+    fc:      { min:80,   max:180,  unit:'bpm',  label:'FC' },
+    pAmp:    { min:0.15, max:0.40, unit:'mV',   label:'Amplitude P' },
+    pDur:    { min:0.02, max:0.04, unit:'s',    label:'Duração P' },
+    pr:      { min:0.06, max:0.13, unit:'s',    label:'Intervalo PR' },
+    qrsDur:  { min:0.03, max:0.05, unit:'s',    label:'Duração QRS' },
+    rAmp:    { min:0.9,  max:2.8,  unit:'mV',   label:'Amplitude R' },
+    mea:     { min:40,   max:100,  unit:'°',    label:'MEA' },
+    st:      { min:-0.05,max:0.05, unit:'mV',   label:'Desvio ST' },
+    tr:      { min:0,    max:0.25, unit:'',     label:'Relação T/R' },
+    qt:      { min:0.15, max:0.25, unit:'s',    label:'Intervalo QT' },
   },
   dog_large: {
-    hr:    { min:70,   max:160,  unit:'bpm', label:'70–160 bpm' },
-    p_amp: { min:0.15, max:0.40, unit:'mV',  label:'0.15–0.40 mV' },
-    p_dur: { min:0.02, max:0.04, unit:'s',   label:'0.02–0.04 s' },
-    pr:    { min:0.06, max:0.13, unit:'s',   label:'0.06–0.13 s' },
-    qrs:   { min:0.04, max:0.06, unit:'s',   label:'0.04–0.06 s' },
-    r_amp: { min:1.2,  max:3.0,  unit:'mV',  label:'1.2–3.0 mV' },
-    st_dev:{ min:0,    max:0.05, unit:'mV',  label:'≤ 0.05 mV' },
-    qt:    { min:0.15, max:0.25, unit:'s',   label:'0.15–0.25 s' },
-    mea:   { min:40,   max:100,  unit:'°',   label:'+40° a +100°' },
+    fc:      { min:70,   max:160,  unit:'bpm',  label:'FC' },
+    pAmp:    { min:0.15, max:0.40, unit:'mV',   label:'Amplitude P' },
+    pDur:    { min:0.02, max:0.04, unit:'s',    label:'Duração P' },
+    pr:      { min:0.06, max:0.13, unit:'s',    label:'Intervalo PR' },
+    qrsDur:  { min:0.04, max:0.06, unit:'s',    label:'Duração QRS' },
+    rAmp:    { min:1.2,  max:3.0,  unit:'mV',   label:'Amplitude R' },
+    mea:     { min:40,   max:100,  unit:'°',    label:'MEA' },
+    st:      { min:-0.05,max:0.05, unit:'mV',   label:'Desvio ST' },
+    tr:      { min:0,    max:0.25, unit:'',     label:'Relação T/R' },
+    qt:      { min:0.15, max:0.25, unit:'s',    label:'Intervalo QT' },
   },
   cat: {
-    hr:    { min:120,  max:240,  unit:'bpm', label:'120–240 bpm' },
-    p_amp: { min:0,    max:0.20, unit:'mV',  label:'≤ 0.20 mV' },
-    p_dur: { min:0,    max:0.04, unit:'s',   label:'≤ 0.04 s' },
-    pr:    { min:0.05, max:0.09, unit:'s',   label:'0.05–0.09 s' },
-    qrs:   { min:0,    max:0.04, unit:'s',   label:'≤ 0.04 s' },
-    r_amp: { min:0,    max:0.9,  unit:'mV',  label:'≤ 0.9 mV' },
-    st_dev:{ min:0,    max:0.05, unit:'mV',  label:'≤ 0.05 mV' },
-    qt:    { min:0.12, max:0.20, unit:'s',   label:'0.12–0.20 s' },
-    mea:   { min:0,    max:160,  unit:'°',   label:'0° a +160°' },
+    fc:      { min:120,  max:240,  unit:'bpm',  label:'FC' },
+    pAmp:    { min:0,    max:0.20, unit:'mV',   label:'Amplitude P' },
+    pDur:    { min:0,    max:0.04, unit:'s',    label:'Duração P' },
+    pr:      { min:0.05, max:0.09, unit:'s',    label:'Intervalo PR' },
+    qrsDur:  { min:0,    max:0.04, unit:'s',    label:'Duração QRS' },
+    rAmp:    { min:0,    max:0.9,  unit:'mV',   label:'Amplitude R' },
+    mea:     { min:0,    max:160,  unit:'°',    label:'MEA' },
+    st:      { min:-0.05,max:0.05, unit:'mV',   label:'Desvio ST' },
+    tr:      { min:0,    max:0.25, unit:'',     label:'Relação T/R' },
+    qt:      { min:0.12, max:0.20, unit:'s',    label:'Intervalo QT' },
   }
 };
 
-const PARAM_LABELS = {
-  hr:'Freq. Cardíaca', p_amp:'Amplitude P', p_dur:'Duração P',
-  pr:'Intervalo PR', qrs:'Duração QRS', r_amp:'Amplitude R',
-  st_dev:'Desvio ST', qt:'QT', mea:'Eixo (MEA)'
-};
+// _ecgBonus: pontos extras por doença baseados nos achados ECG
+window._ecgBonus = {};
 
-function getRefSet() {
-  const sp = document.getElementById('species').value;
-  const sz = document.getElementById('size').value;
-  if (sp === 'cat') return REFS.cat;
-  if (sp === 'dog') return sz === 'large' ? REFS.dog_large : REFS.dog_small;
-  return null;
+function getECGProfile() {
+  return especie === 'gato'
+    ? 'cat'
+    : (document.getElementById('ecg-porte')?.value || 'dog_small');
 }
 
-function updateRefs() {
-  const refs = getRefSet(); if (!refs) return;
-  const map = { hr:'ref_hr', p_amp:'ref_p_amp', p_dur:'ref_p_dur', pr:'ref_pr',
-                qrs:'ref_qrs', r_amp:'ref_r', st_dev:'ref_st', qt:'ref_qt', mea:'ref_mea' };
-  for (const [k,id] of Object.entries(map)) {
-    const el = document.getElementById(id);
-    if (el && refs[k]) el.textContent = refs[k].label;
+function checkParam(val, ref) {
+  if (val === null || val === '') return 'empty';
+  const v = parseFloat(val);
+  if (isNaN(v)) return 'empty';
+  const range = (ref.max - ref.min) * 0.15;
+  if (v < ref.min - range || v > ref.max + range) return 'bad';
+  if (v < ref.min || v > ref.max) return 'warn';
+  return 'ok';
+}
+
+function setFieldStatus(inputId, statusId, status, val, ref) {
+  const inp = document.getElementById(inputId);
+  const ico = document.getElementById(statusId);
+  if (!inp || !ico) return;
+  inp.className = 'ecg-input' + (status === 'empty' ? '' : ' ' + status);
+  const icons = { ok:'✅', warn:'⚠️', bad:'❌', empty:'' };
+  ico.textContent = icons[status] || '';
+}
+
+function interpretECG() {
+  const profile = getECGProfile();
+  const refs = ECG_REFS[profile];
+  const fields = [
+    { inp:'ecg-fc',      st:'st-fc',      key:'fc'     },
+    { inp:'ecg-p-amp',   st:'st-p-amp',   key:'pAmp'   },
+    { inp:'ecg-p-dur',   st:'st-p-dur',   key:'pDur'   },
+    { inp:'ecg-pr',      st:'st-pr',      key:'pr'     },
+    { inp:'ecg-qrs-dur', st:'st-qrs-dur', key:'qrsDur' },
+    { inp:'ecg-r-amp',   st:'st-r-amp',   key:'rAmp'   },
+    { inp:'ecg-mea',     st:'st-mea',     key:'mea'    },
+    { inp:'ecg-st',      st:'st-st',      key:'st'     },
+    { inp:'ecg-tr',      st:'st-tr',      key:'tr'     },
+    { inp:'ecg-qt',      st:'st-qt',      key:'qt'     },
+  ];
+
+  const findings = [];
+  const ritmo = document.getElementById('ecg-ritmo')?.value || '';
+
+  // Achado de ritmo
+  if (ritmo && ritmo !== 'Ritmo Sinusal Normal' && ritmo !== 'Arritmia Sinusal Respiratória') {
+    const isWarning = ['Taquicardia Sinusal','Bradicardia Sinusal','Complexos Atriais Prematuros (CAP)',
+                       'Bloqueio AV grau I','Bloqueio de Ramo Direito'].includes(ritmo);
+    const cls = isWarning ? 'ecg-chip-warn' : 'ecg-chip-bad';
+    findings.push({ label: '⚡ ' + ritmo, cls });
+  } else if (ritmo === 'Ritmo Sinusal Normal' || ritmo === 'Arritmia Sinusal Respiratória') {
+    findings.push({ label: '✅ ' + ritmo, cls: 'ecg-chip-ok' });
+  }
+
+  fields.forEach(f => {
+    const val = document.getElementById(f.inp)?.value;
+    if (val === '' || val === null || val === undefined) return;
+    const ref = refs[f.key];
+    const status = checkParam(val, ref);
+    setFieldStatus(f.inp, f.st, status, val, ref);
+    if (status === 'ok') {
+      findings.push({ label: ref.label + ' normal', cls: 'ecg-chip-ok' });
+    } else if (status === 'warn') {
+      const v = parseFloat(val);
+      const dir = v < ref.min ? '↓ abaixo' : '↑ acima';
+      findings.push({ label: ref.label + ' ' + dir + ' do ref.', cls: 'ecg-chip-warn' });
+    } else if (status === 'bad') {
+      const v = parseFloat(val);
+      const dir = v < ref.min ? '↓↓ muito baixo' : '↑↑ muito alto';
+      findings.push({ label: ref.label + ': ' + dir, cls: 'ecg-chip-bad' });
+    }
+  });
+
+  const box = document.getElementById('ecg-result-box');
+  const list = document.getElementById('ecg-finding-list');
+  if (findings.length > 0) {
+    box.classList.remove('hidden');
+    list.innerHTML = findings.map(f =>
+      `<span class="ecg-chip ${f.cls}">${f.label}</span>`
+    ).join('');
+  } else {
+    box.classList.add('hidden');
   }
 }
 
-function checkValue(key, val, refs) {
-  const r = refs[key]; if (!r) return null;
-  const margin = (r.max - r.min) * 0.1;
-  if (val >= r.min && val <= r.max) return 'ok';
-  if (val >= r.min - margin && val <= r.max + margin) return 'warn';
-  return 'danger';
-}
+/* ══════════════════════════════════════════════════════════════════════════
+   ECG — APLICAR BONUS AO DIAGNÓSTICO
+   Mapeia achados ECG → IDs das doenças na base
+   id:4=CMD  id:5=CMH  id:6=CMR  id:7=DDVM
+   id:13=FA  id:14=TV  id:15=BAV
+══════════════════════════════════════════════════════════════════════════ */
+function applyECGBonus() {
+  const profile = getECGProfile();
+  const refs = ECG_REFS[profile];
+  const ritmo = document.getElementById('ecg-ritmo')?.value || '';
+  const fc      = parseFloat(document.getElementById('ecg-fc')?.value);
+  const pAmp    = parseFloat(document.getElementById('ecg-p-amp')?.value);
+  const pDur    = parseFloat(document.getElementById('ecg-p-dur')?.value);
+  const pr      = parseFloat(document.getElementById('ecg-pr')?.value);
+  const qrsDur  = parseFloat(document.getElementById('ecg-qrs-dur')?.value);
+  const rAmp    = parseFloat(document.getElementById('ecg-r-amp')?.value);
+  const stDev   = parseFloat(document.getElementById('ecg-st')?.value);
+  const qt      = parseFloat(document.getElementById('ecg-qt')?.value);
 
-function liveCheck(id) {
-  const refs = getRefSet(); if (!refs) return;
-  const el = document.getElementById(id);
-  const val = parseFloat(el.value);
-  if (isNaN(val)) { el.className = ''; return; }
-  const s = checkValue(id, val, refs);
-  el.className = s === 'ok' ? 'ok' : s === 'warn' ? 'warn' : s === 'danger' ? 'danger' : '';
-}
+  const bonus = {};
+  const add = (id, pts) => { bonus[id] = (bonus[id] || 0) + pts; };
 
-function toggleRef() {
-  document.getElementById('ref-area').classList.toggle('open');
-}
+  // ── Arritmias ──────────────────────────────────────────────────────────
+  if (ritmo === 'Fibrilação Atrial') {
+    add(13, 25); // FA direta
+    add(4,  10); // CMD frequentemente causa FA
+    add(5,  8);  // CMH em gatos
+    add(7,  8);  // DDVM avançado pode ter FA
+  }
+  if (ritmo === 'Taquicardia Ventricular') {
+    add(14, 25); // TV direta
+    add(4,  10); // CMD tem TV frequente
+    add(3,  6);  // Estenose subaórtica
+  }
+  if (ritmo.startsWith('Bloqueio AV grau II') || ritmo === 'Bloqueio AV grau III (total)') {
+    add(15, 25); // BAV direta
+  }
+  if (ritmo === 'Bloqueio AV grau I') { add(15, 10); }
+  if (ritmo === 'Complexos Ventriculares Prematuros (CVP)') {
+    add(14, 12); add(4, 8); add(9, 5);
+  }
+  if (ritmo === 'Taquicardia Sinusal') {
+    add(7, 5); add(4, 5); add(5, 5);
+  }
+  if (ritmo === 'Bradicardia Sinusal') { add(15, 8); }
 
-function toggleECG() {
-  const panel = document.getElementById('ecg-panel');
-  if (panel.classList.contains('open')) { closePanel(); }
-  else { openECG(); }
-}
+  // ── Onda P alargada / aumentada → sobrecarga atrial (DDVM, CMD) ────────
+  if (!isNaN(pAmp) && pAmp > refs.pAmp.max) { add(7, 8); add(4, 6); add(13, 5); }
+  if (!isNaN(pDur) && pDur > refs.pDur.max) { add(7, 8); add(4, 6); }
 
-function openECG() {
-  const panel = document.getElementById('ecg-panel');
-  panel.classList.add('open');
-  document.getElementById('card-ecg').classList.add('active');
-  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
-}
+  // ── PR prolongado → BAV grau I, Endocardite ──────────────────────────
+  if (!isNaN(pr) && pr > refs.pr.max) { add(15, 10); add(9, 6); }
 
-function closePanel() {
-  document.getElementById('ecg-panel').classList.remove('open');
-}
+  // ── QRS alargado → CMD, bloqueio de ramo, TV ─────────────────────────
+  if (!isNaN(qrsDur) && qrsDur > refs.qrsDur.max) { add(4, 10); add(14, 8); }
 
-function clearForm() {
-  ['hr','p_amp','p_dur','pr','qrs','r_amp','st_dev','t_amp','qt','mea','notes','patient_name','breed','age','weight']
-    .forEach(id => { const el = document.getElementById(id); if (el) { el.value=''; el.className=''; } });
-  ['species','size','rhythm','p_morph','st_seg']
-    .forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
-  document.getElementById('ecg-placeholder').style.display = 'flex';
-  document.getElementById('ecg-result').style.display = 'none';
-  updateRefs();
-}
-
-function analyze() {
-  const species = document.getElementById('species').value;
-  if (!species) { alert('Selecione a espécie antes de analisar.'); return; }
-  const refs = getRefSet();
-  const vals = {
-    hr:    parseFloat(document.getElementById('hr').value),
-    p_amp: parseFloat(document.getElementById('p_amp').value),
-    p_dur: parseFloat(document.getElementById('p_dur').value),
-    pr:    parseFloat(document.getElementById('pr').value),
-    qrs:   parseFloat(document.getElementById('qrs').value),
-    r_amp: parseFloat(document.getElementById('r_amp').value),
-    st_dev:parseFloat(document.getElementById('st_dev').value),
-    qt:    parseFloat(document.getElementById('qt').value),
-    mea:   parseFloat(document.getElementById('mea').value),
-  };
-  const rhythm  = document.getElementById('rhythm').value;
-  const p_morph = document.getElementById('p_morph').value;
-  const st_seg  = document.getElementById('st_seg').value;
-  const t_amp   = parseFloat(document.getElementById('t_amp').value);
-
-  let cntOk=0, cntWarn=0, cntDanger=0;
-  const rows = [];
-  for (const [key,val] of Object.entries(vals)) {
-    if (isNaN(val)) continue;
-    const status = checkValue(key, val, refs); if (!status) continue;
-    if (status==='ok') cntOk++; else if (status==='warn') cntWarn++; else cntDanger++;
-    rows.push({ label:PARAM_LABELS[key], val, unit:refs[key].unit, ref:refs[key].label, status });
+  // ── R baixo → CMD, Derrame Pericárdico, Tamponamento ─────────────────
+  if (!isNaN(rAmp) && rAmp < refs.rAmp.min) {
+    add(4, 8); add(10, 10); add(11, 10); add(12, 6);
   }
 
-  let ovClass, ovText;
-  if (cntDanger>0)      { ovClass='ov-danger'; ovText='❌ ECG com alterações significativas — avaliação cardiológica recomendada'; }
-  else if (cntWarn>0)   { ovClass='ov-warn';   ovText='⚠️ ECG com achados limítrofes — monitoramento e correlação clínica indicados'; }
-  else if (cntOk>0)     { ovClass='ov-ok';     ovText='✅ ECG dentro dos parâmetros normais para a espécie'; }
-  else                  { ovClass='ov-warn';   ovText='ℹ️ Dados insuficientes para análise completa'; }
+  // ── ST deprimido → isquemia, CMD avançado ────────────────────────────
+  if (!isNaN(stDev) && stDev < -refs.st.max) { add(4, 8); add(14, 5); }
 
-  const diags = [];
-  const rhythmMap = {
-    afib:        { sev:'urgent',   title:'Fibrilação Atrial', desc:'Arritmia grave. Associada a DDVM, CMD, CMH. Investigar ecocardiograma urgente.' },
-    vt:          { sev:'urgent',   title:'Taquicardia Ventricular', desc:'Potencialmente fatal. Tratamento antiarrítmico imediato. Investigar cardiopatia estrutural.' },
-    avb3:        { sev:'urgent',   title:'Bloqueio AV 3º Grau', desc:'Bloqueio total. Síncope e morte súbita. Avaliar indicação de marca-passo.' },
-    avb2:        { sev:'moderate', title:'Bloqueio AV 2º Grau', desc:'Condução intermitente. Avaliar progressão para bloqueio total.' },
-    avb1:        { sev:'moderate', title:'Bloqueio AV 1º Grau', desc:'PR prolongado. Pode indicar aumento atrial ou doença do nó AV.' },
-    lbbb:        { sev:'moderate', title:'Bloqueio de Ramo Esquerdo', desc:'QRS alargado. Geralmente indica doença cardíaca estrutural grave.' },
-    rbbb:        { sev:'moderate', title:'Bloqueio de Ramo Direito', desc:'Pode ser fisiológico ou indicar sobrecarga de VD.' },
-    vpc:         { sev:'moderate', title:'CVPs / EV Ventriculares', desc:'Se >30/h ou em salvas, investigar cardiopatia e tratar.' },
-    apc:         { sev:'info',     title:'EV Supraventriculares', desc:'Geralmente benignas se isoladas. Se frequentes, investigar doença atrial.' },
-    sinus_tachy: { sev:'info',     title:'Taquicardia Sinusal', desc:'Avaliar dor, febre, anemia, IC, hipertireoidismo (gatos).' },
-    sinus_brady: { sev:'moderate', title:'Bradicardia Sinusal', desc:'Avaliar hipercalemia, hipotireoidismo, doença do nó sinusal, fármacos.' },
-    sinus_arrh:  { sev:'info',     title:'Arritmia Sinusal', desc:'Variação fisiológica da FC com a respiração em cães.' },
-  };
-  if (rhythm && rhythmMap[rhythm]) diags.push(rhythmMap[rhythm]);
-  if (p_morph==='wide')   diags.push({ sev:'moderate', title:'P Mitrale', desc:'Onda P alargada. Sugestivo de aumento atrial esquerdo. Considerar ecocardiograma.' });
-  if (p_morph==='tall')   diags.push({ sev:'moderate', title:'P Pulmonale', desc:'Onda P alta. Sugestivo de aumento atrial direito / hipertensão pulmonar.' });
-  if (p_morph==='absent') diags.push({ sev:'urgent',   title:'Onda P ausente', desc:'Avaliar fibrilação atrial, ritmo juncional ou parada atrial.' });
-  if (st_seg==='depression') diags.push({ sev:'urgent', title:'Infradesnivelamento de ST', desc:'Isquemia miocárdica, hipocalemia, intoxicação por digitálicos ou hipertrofia.' });
-  if (st_seg==='elevation')  diags.push({ sev:'urgent', title:'Supradesnivelamento de ST', desc:'Lesão miocárdica aguda, pericardite. Investigar urgente.' });
+  // ── QT prolongado → hipocalemia, arritmia grave ──────────────────────
+  if (!isNaN(qt) && qt > refs.qt.max) { add(14, 6); add(15, 4); }
 
-  if (!isNaN(t_amp) && !isNaN(vals.r_amp) && vals.r_amp>0) {
-    const ratio = Math.abs(t_amp)/vals.r_amp;
-    if (ratio>0.25) diags.push({ sev:'moderate', title:'Onda T aumentada', desc:`T/R = ${(ratio*100).toFixed(0)}% (ref. ≤25%). Distúrbio eletrolítico, isquemia ou sobrecarga ventricular.` });
-  }
-  if (!isNaN(vals.hr)) {
-    if (vals.hr<refs.hr.min) diags.push({ sev:'moderate', title:'Bradicardia', desc:`FC ${vals.hr} bpm. Avaliar hipotermia, hipotireoidismo, hipercalemia, doença do nó sinusal.` });
-    if (vals.hr>refs.hr.max) diags.push({ sev:'info',     title:'Taquicardia', desc:`FC ${vals.hr} bpm. Descartar dor, estresse, febre, IC, anemia.` });
-  }
-  if (!isNaN(vals.pr) && vals.pr>refs.pr.max) diags.push({ sev:'moderate', title:'PR Prolongado — Bloqueio AV 1º Grau', desc:'Condução AV lentificada. Tonalidade vagal, distúrbio eletrolítico ou fibrose do nó AV.' });
-  if (!isNaN(vals.qrs) && vals.qrs>refs.qrs.max) diags.push({ sev:'moderate', title:'QRS Alargado', desc:`${vals.qrs}s (ref. ${refs.qrs.label}). Bloqueio de ramo, hipertrofia ou condução aberrante.` });
-  if (!isNaN(vals.r_amp) && vals.r_amp>refs.r_amp.max) diags.push({ sev:'moderate', title:'Amplitude R Aumentada', desc:`${vals.r_amp} mV (ref. ${refs.r_amp.label}). Hipertrofia/aumento ventricular esquerdo.` });
-  if (!isNaN(vals.mea)) {
-    if (vals.mea<refs.mea.min) diags.push({ sev:'moderate', title:'Desvio do Eixo à Esquerda', desc:`${vals.mea}° (ref. ${refs.mea.label}). Hipertrofia/bloqueio de ramo esquerdo.` });
-    if (vals.mea>refs.mea.max) diags.push({ sev:'moderate', title:'Desvio do Eixo à Direita', desc:`${vals.mea}° (ref. ${refs.mea.label}). Hipertrofia VD, hipertensão pulmonar, bloqueio de ramo direito.` });
-  }
-  if (diags.length===0 && cntDanger===0 && cntWarn===0 && cntOk>0) {
-    diags.push({ sev:'info', title:'Sem alterações nos parâmetros avaliados', desc:'Todos os valores estão dentro da referência. Correlacionar com achados clínicos.' });
-  }
+  // Limita a 20 pts por doença (não deve ultrapassar o score natural)
+  Object.keys(bonus).forEach(k => { bonus[k] = Math.min(20, bonus[k]); });
 
-  // Render
-  const name  = document.getElementById('patient_name').value;
-  const breed = document.getElementById('breed').value;
-  const age   = document.getElementById('age').value;
-  const spLabel = species==='cat' ? 'Gato' : 'Cão';
-  const szLabel = species==='dog' ? (document.getElementById('size').value==='large' ? ' · Médio/Grande' : ' · Pequeno/Toy') : '';
-  document.getElementById('patient-summary').innerHTML =
-    `<strong>${name||'Paciente'}</strong>${breed?' · '+breed:''}${age?' · '+age:''} &nbsp;|&nbsp; <strong>${spLabel}</strong>${szLabel}`;
-
-  document.getElementById('cnt-ok').textContent = cntOk;
-  document.getElementById('cnt-warn').textContent = cntWarn;
-  document.getElementById('cnt-danger').textContent = cntDanger;
-
-  const badge = document.getElementById('overall-badge');
-  badge.className = 'overall-badge ' + ovClass;
-  badge.textContent = ovText;
-
-  document.getElementById('param-rows').innerHTML = rows.map(r => {
-    const dc = r.status==='ok'?'dot-ok':r.status==='warn'?'dot-w':'dot-d';
-    const tc = r.status==='ok'?'ok-color':r.status==='warn'?'w-color':'d-color';
-    const st = r.status==='ok'?'Normal':r.status==='warn'?'Limítrofe':'Alterado';
-    return `<tr><td>${r.label}</td><td><strong>${r.val} ${r.unit}</strong></td>
-      <td style="color:#888;font-size:11px">${r.ref}</td>
-      <td class="${tc}"><span class="dot ${dc}"></span>${st}</td></tr>`;
-  }).join('');
-
-  document.getElementById('diag-items').innerHTML = diags.map(d =>
-    `<div class="diag-item ${d.sev}"><strong>${d.title}</strong><p>${d.desc}</p></div>`
-  ).join('');
-
-  document.getElementById('ecg-placeholder').style.display = 'none';
-  document.getElementById('ecg-result').style.display = 'block';
+  window._ecgBonus = bonus;
+  document.getElementById('ecg-applied-badge').classList.add('show');
 }
 
-updateRefs();
+/* ══════════════════════════════════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  renderSint();
+  renderExam();
+});
 </script>
-
-<style>
-@media print {
-  nav, .hero, .stats-bar, #como-funciona, #sobre, footer,
-  .exames-grid, .btn-analyze, .btn-clear-form, .ref-toggle-btn, .btn-close-panel { display: none !important; }
-  #ecg-panel { display: block !important; box-shadow: none; }
-  .ecg-panel-body { grid-template-columns: 1fr !important; }
-  body { background: white; }
-}
-</style>
-
 </body>
 </html>
