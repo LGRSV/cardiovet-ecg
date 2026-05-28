@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cardiovet IA — Diagnóstico Cardiovascular Veterinário</title>
+  <style>
+    :root {
+      --navy:      #0D1B2A;
+      --blue:      #1A4E8A;
+      --lightblue: #2E86C1;
+      --teal:      #0D9488;
+      --teallight: #5EEAD4;
+      --red:       #C0392B;
+      --orange:    #E67E22;
+      --green:     #27AE60;
+      --gray:      #F4F6F7;
+      --darkgray:  #2C3E50;
+      --border:    #D5DBDB;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #ECF0F1; color: var(--darkgray); }
+
+    /* ── NAV ─────────────────────────────────────────────── */
+    nav {
+      background: var(--navy);
+      border-bottom: 3px solid var(--teal);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner {
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 24px;
+      display: flex; align-items: center; gap: 0;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      padding: 14px 0; text-decoration: none; margin-right: 32px;
+    }
+    .nav-logo .mark {
+      width: 34px; height: 34px; background: var(--teal); border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 900; color: white;
+    }
+    .nav-logo span { color: white; font-size: 16px; font-weight: 700; }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-links a {
+      color: #8EACC8; text-decoration: none; font-size: 14px; font-weight: 500;
+      padding: 18px 16px; border-bottom: 3px solid transparent; margin-bottom: -3px;
+      transition: color .2s, border-color .2s;
+    }
+    .nav-links a:hover, .nav-links a.active { color: white; border-bottom-color: var(--teal); }
+    .nav-badge {
+      margin-left: auto; background: var(--teal); color: white;
+      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px; letter-spacing: 1px;
+    }
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .hero {
+      background: var(--navy);
+      padding: 72px 24px 80px;
+      text-align: center;
+      position: relative; overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(
+        90deg, transparent, transparent 80px,
+        rgba(13,148,136,.04) 80px, rgba(13,148,136,.04) 81px
+      );
+    }
+    .hero-inner { position: relative; max-width: 700px; margin: 0 auto; }
+    .hero-tag {
+      display: inline-block; background: rgba(13,148,136,.2); color: var(--teallight);
+      font-size: 11px; font-weight: 700; letter-spacing: 2px;
+      padding: 5px 16px; border-radius: 20px; margin-bottom: 20px;
+    }
+    .hero h1 { font-size: 52px; font-weight: 800; color: white; letter-spacing: -1px; line-height: 1.1; }
+    .hero h1 span { color: var(--teallight); }
+    .hero p {
+      margin: 20px 0 36px; font-size: 18px; color: #8EACC8; line-height: 1.6;
+    }
+    .hero-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--teal); color: white; border: none;
+      padding: 14px 32px; border-radius: 10px; font-size: 15px; font-weight: 700;
+      cursor: pointer; text-decoration: none; transition: background .2s;
+    }
+    .btn-primary:hover { background: #0b7a6e; }
+    .btn-outline {
+      background: transparent; color: white; border: 2px solid rgba(255,255,255,.3);
+      padding: 13px 28px; border-radius: 10px; font-size: 15px; font-weight: 600;
+      cursor: pointer; text-decoration: none; transition: border-color .2s;
+    }
+    .btn-outline:hover { border-color: white; }
+
+    /* ── STATS BAR ───────────────────────────────────────── */
+    .stats-bar {
+      background: var(--blue);
+      padding: 20px 24px;
+    }
+    .stats-inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; gap: 0; flex-wrap: wrap;
+    }
+    .stat-item {
+      flex: 1; min-width: 140px; text-align: center;
+      padding: 8px 16px;
+      border-right: 1px solid rgba(255,255,255,.15);
+    }
+    .stat-item:last-child { border-right: none; }
+    .stat-num { font-size: 26px; font-weight: 800; color: var(--teallight); }
+    .stat-label { font-size: 12px; color: #B0C4DE; margin-top: 2px; }
+
+    /* ── SECTIONS ────────────────────────────────────────── */
+    section { padding: 60px 24px; }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-title {
+      font-size: 28px; font-weight: 800; color: var(--navy); margin-bottom: 8px;
+    }
+    .section-sub { font-size: 15px; color: #7F8C8D; margin-bottom: 36px; }
+    .section-divider {
+      width: 48px; height: 4px; background: var(--teal); border-radius: 2px; margin-bottom: 12px;
+    }
+
+    /* ── COMO FUNCIONA ───────────────────────────────────── */
+    #como-funciona { background: white; }
+    .steps { display: flex; gap: 20px; flex-wrap: wrap; }
+    .step {
+      flex: 1; min-width: 200px;
+      padding: 28px 24px;
+      background: var(--gray);
+      border-radius: 12px;
+      position: relative;
+    }
+    .step-num {
+      width: 40px; height: 40px; background: var(--teal); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: white; margin-bottom: 14px;
+    }
+    .step h3 { font-size: 15px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .step p  { font-size: 13px; color: #666; line-height: 1.55; }
+    .step-arrow {
+      position: absolute; right: -12px; top: 50%;
+      transform: translateY(-50%);
+      width: 24px; height: 24px; background: var(--teal); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 12px; z-index: 1;
+    }
+    @media (max-width: 600px) { .step-arrow { display: none; } }
+
+    /* ── EXAMES ──────────────────────────────────────────── */
+    #exames { background: var(--gray); }
+    .exames-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 18px;
+      margin-bottom: 32px;
+    }
+    .exame-card {
+      background: white; border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.07);
+      overflow: hidden; cursor: pointer;
+      border: 2px solid transparent;
+      transition: border-color .2s, box-shadow .2s, transform .15s;
+    }
+    .exame-card:hover {
+      border-color: var(--teal);
+      box-shadow: 0 6px 20px rgba(13,148,136,.15);
+      transform: translateY(-2px);
+    }
+    .exame-card.active {
+      border-color: var(--teal);
+      box-shadow: 0 6px 20px rgba(13,148,136,.2);
+    }
+    .exame-card.disabled {
+      opacity: .55; cursor: not-allowed;
+    }
+    .exame-card.disabled:hover { transform: none; border-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,.07); }
+    .exame-top {
+      background: var(--navy); padding: 20px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .exame-icon {
+      width: 44px; height: 44px; background: var(--teal); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+    }
+    .exame-top h3 { color: white; font-size: 15px; font-weight: 700; }
+    .exame-top p  { color: #8EACC8; font-size: 12px; margin-top: 2px; }
+    .exame-body { padding: 16px 20px; }
+    .exame-body p { font-size: 13px; color: #666; line-height: 1.5; }
+    .exame-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+    .tag {
+      font-size: 10px; font-weight: 700; padding: 3px 10px; border-radius: 20px;
+      letter-spacing: .5px;
+    }
+    .tag-active    { background: #E8F8F5; color: var(--teal); }
+    .tag-soon      { background: #EBF5FB; color: var(--blue); }
+    .tag-coming    { background: #F4F4F4; color: #999; }
+
+    /* ── ECG PANEL ───────────────────────────────────────── */
+    #ecg-panel {
+      display: none;
+      background: white; border-radius: 16px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.1);
+      overflow: hidden;
+      margin-top: 8px;
+      animation: slideDown .3s ease;
+    }
+    #ecg-panel.open { display: block; }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .ecg-panel-header {
+      background: var(--navy); padding: 18px 24px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .ecg-panel-header h2 { color: white; font-size: 16px; font-weight: 700; }
+    .ecg-panel-header p  { color: #8EACC8; font-size: 12px; margin-top: 2px; }
+    .btn-close-panel {
+      background: rgba(255,255,255,.15); color: white; border: none;
+      width: 32px; height: 32px; border-radius: 8px; cursor: pointer;
+      font-size: 16px; display: flex; align-items: center; justify-content: center;
+      transition: background .2s; flex-shrink: 0;
+    }
+    .btn-close-panel:hover { background: rgba(255,255,255,.25); }
+    .ecg-panel-body {
+      padding: 28px 24px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+    }
+    @media (max-width: 780px) { .ecg-panel-body { grid-template-columns: 1fr; } }
+
+    /* ── FORM STYLES ─────────────────────────────────────── */
+    .form-card { background: var(--gray); border-radius: 12px; overflow: hidden; }
+    .form-card-header {
+      background: var(--blue); color: white; padding: 12px 18px;
+      font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 7px;
+    }
+    .form-card-body { padding: 18px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-grid .full { grid-column: 1 / -1; }
+    .field-divider {
+      grid-column: 1 / -1;
+      font-size: 11px; font-weight: 700; color: var(--blue);
+      text-transform: uppercase; letter-spacing: 1px;
+      border-bottom: 1.5px solid var(--border); padding-bottom: 5px; margin-top: 4px;
+    }
+    label {
+      display: block; font-size: 11px; font-weight: 600;
+      color: #666; margin-bottom: 4px; text-transform: uppercase; letter-spacing: .3px;
+    }
+    label .ref { color: var(--teal); font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 10px; }
+    label .unit { color: #999; font-weight: 400; text-transform: none; }
+    input[type=number], input[type=text], select {
+      width: 100%; padding: 8px 11px; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 13px; color: var(--darkgray); background: white;
+      transition: border-color .2s;
+    }
+    input:focus, select:focus { outline: none; border-color: var(--teal); }
+    input.ok     { border-color: var(--green);  background: #F0FFF4; }
+    input.warn   { border-color: var(--orange); background: #FFFBF0; }
+    input.danger { border-color: var(--red);    background: #FFF5F5; }
+
+    .btn-analyze {
+      grid-column: 1 / -1; margin-top: 6px;
+      background: var(--teal); color: white; border: none;
+      border-radius: 10px; padding: 13px; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-analyze:hover { background: #0b7a6e; }
+    .btn-clear-form {
+      grid-column: 1 / -1;
+      background: transparent; color: #999; border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 8px; font-size: 12px; cursor: pointer;
+    }
+
+    /* ── RESULT ──────────────────────────────────────────── */
+    .result-card { background: var(--gray); border-radius: 12px; overflow: hidden; }
+    .result-card-header {
+      background: var(--navy); color: white; padding: 12px 18px;
+      font-size: 13px; font-weight: 700;
+    }
+    .result-card-body { padding: 18px; min-height: 400px; }
+    #ecg-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 300px; color: #BDC3C7; text-align: center; gap: 12px;
+    }
+    #ecg-placeholder .big-icon { font-size: 52px; }
+    #ecg-placeholder p { font-size: 13px; line-height: 1.5; }
+    #ecg-result { display: none; }
+
+    .summary-chips { display: flex; gap: 8px; margin-bottom: 14px; }
+    .s-chip {
+      flex: 1; background: white; border-radius: 8px; padding: 8px;
+      text-align: center; box-shadow: 0 1px 4px rgba(0,0,0,.08);
+    }
+    .s-chip .n { font-size: 24px; font-weight: 800; }
+    .s-chip .l { font-size: 10px; color: #999; }
+    .ok-color  { color: var(--green); }
+    .w-color   { color: var(--orange); }
+    .d-color   { color: var(--red); }
+    .overall-badge {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
+      margin-bottom: 14px;
+    }
+    .ov-ok     { background: #EAFAF1; color: var(--green);  border: 1.5px solid var(--green); }
+    .ov-warn   { background: #FEF9E7; color: var(--orange); border: 1.5px solid var(--orange); }
+    .ov-danger { background: #FDEDEC; color: var(--red);    border: 1.5px solid var(--red); }
+    .param-table { width: 100%; border-collapse: collapse; margin-bottom: 14px; font-size: 12px; }
+    .param-table th {
+      background: white; font-size: 10px; font-weight: 700; color: #999;
+      text-transform: uppercase; padding: 6px 8px; text-align: left;
+    }
+    .param-table td { padding: 6px 8px; border-bottom: 1px solid #EEE; }
+    .param-table tr:last-child td { border-bottom: none; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+    .dot-ok { background: var(--green); }
+    .dot-w  { background: var(--orange); }
+    .dot-d  { background: var(--red); }
+    .diag-list { margin-bottom: 10px; }
+    .diag-item {
+      background: white; border-left: 3px solid var(--blue);
+      border-radius: 0 8px 8px 0; padding: 9px 12px; margin-bottom: 7px;
+      font-size: 12px;
+    }
+    .diag-item strong { color: var(--darkgray); font-size: 12px; }
+    .diag-item p { color: #666; margin-top: 2px; font-size: 11px; line-height: 1.4; }
+    .diag-item.urgent   { border-color: var(--red);    background: #FFF5F5; }
+    .diag-item.moderate { border-color: var(--orange); background: #FFFBF0; }
+    .diag-item.info     { border-color: var(--teal);   background: #F0FAFA; }
+    .disclaimer {
+      background: #FEF9E7; border: 1px solid #F9CA24;
+      border-radius: 8px; padding: 9px 12px;
+      font-size: 11px; color: #7D6608; display: flex; gap: 7px;
+    }
+    .ref-toggle-btn {
+      width: 100%; background: var(--navy); color: white; border: none;
+      border-radius: 8px; padding: 9px; font-size: 12px; font-weight: 600;
+      cursor: pointer; margin-top: 10px;
+    }
+    .ref-area { display: none; margin-top: 10px; overflow-x: auto; }
+    .ref-area.open { display: block; }
+    .ref-table { width: 100%; border-collapse: collapse; font-size: 11px; }
+    .ref-table th { background: var(--navy); color: white; padding: 6px 8px; text-align: left; }
+    .ref-table td { padding: 5px 8px; border-bottom: 1px solid #EEE; }
+    .ref-table tr:nth-child(even) td { background: #FAFAFA; }
+    .ref-note { font-size: 10px; color: #999; margin-top: 6px; }
+
+    /* ── SOBRE ───────────────────────────────────────────── */
+    #sobre { background: white; }
+    .sobre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+    @media (max-width: 700px) { .sobre-grid { grid-template-columns: 1fr; } }
+    .sobre-text h2 { font-size: 24px; font-weight: 800; color: var(--navy); margin-bottom: 14px; }
+    .sobre-text p  { font-size: 14px; color: #555; line-height: 1.7; margin-bottom: 14px; }
+    .diff-list { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .diff-list li {
+      display: flex; align-items: flex-start; gap: 10px; font-size: 14px; color: #555;
+    }
+    .diff-list li .d-icon {
+      width: 28px; height: 28px; background: rgba(13,148,136,.1); border-radius: 7px;
+      display: flex; align-items: center; justify-content: center; font-size: 13px; flex-shrink: 0;
+    }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    footer {
+      background: var(--navy); color: #8EACC8;
+      padding: 32px 24px; text-align: center; font-size: 13px;
+      border-top: 3px solid var(--teal);
+    }
+    footer strong { color: white; }
+  </style>
+</head>
+<body>
+
+<!-- ── NAV ──────────────────────────────────────────────────────────── -->
+<nav>
+  <div class="nav-inner">
+    <a class="nav-logo" href="#inicio">
+      <div class="mark">CV</div>
+      <span>Cardiovet IA</span>
+    </a>
+    <div class="nav-links">
+      <a href="#inicio"         class="active">Início</a>
+      <a href="#como-funciona">Como funciona</a>
+      <a href="#exames"        onclick="closePanel()">Exames</a>
+      <a href="#sobre">Sobre</a>
+    </div>
+    <span class="nav-badge">BETA</span>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────────────────── -->
+<section id="inicio" style="padding:0">
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">INTELIGÊNCIA ARTIFICIAL VETERINÁRIA</div>
+      <h1>Diagnóstico <span>cardiovascular</span><br/>para pequenos animais</h1>
+      <p>A Cardiovet IA auxilia o veterinário a identificar alterações cardíacas em cães e gatos com base em parâmetros clínicos e de exames, de forma rápida e baseada em evidências.</p>
+      <div class="hero-btns">
+        <a href="#exames" class="btn-primary" onclick="openECG()">📈 Analisar ECG agora</a>
+        <a href="#como-funciona" class="btn-outline">Como funciona →</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-bar">
+    <div class="stats-inner">
+      <div class="stat-item">
+        <div class="stat-num">160M+</div>
+        <div class="stat-label">pets no Brasil</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">10%</div>
+        <div class="stat-label">dos cães têm cardiopatia</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">70%+</div>
+        <div class="stat-label">diagnósticos: DDVM</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">R$77bi</div>
+        <div class="stat-label">mercado pet em 2025</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">20%/ano</div>
+        <div class="stat-label">crescimento IA vet.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── COMO FUNCIONA ─────────────────────────────────────────────────── -->
+<section id="como-funciona">
+  <div class="section-inner">
+    <div class="section-divider"></div>
+    <h2 class="section-title">Como funciona</h2>
+    <p class="section-sub">Três etapas simples para um diagnóstico diferencial cardiovascular completo.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Entrada de dados</h3>
+        <p>O veterinário insere os parâmetros clínicos do paciente: espécie, porte, sinais clínicos e resultados dos exames.</p>
+        <div class="step-arrow">›</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>Análise por IA</h3>
+        <p>A ferramenta compara os valores com referências científicas validadas para cães e gatos e identifica padrões diagnósticos.</p>
+        <div class="step-arrow">›</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>Diagnóstico diferencial</h3>
+        <p>Hipóteses ranqueadas, sugestão de conduta clínica e alerta de urgência — em segundos, com base em evidências.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── EXAMES ────────────────────────────────────────────────────────── -->
+<section id="exames">
+  <div class="section-inner">
+    <div class="section-divider"></div>
+    <h2 class="section-title">Ferramentas de Exame</h2>
+    <p class="section-sub">Selecione o exame que deseja analisar. Novos módulos em breve.</p>
+
+    <div class="exames-grid">
+
+      <!-- ECG — ATIVO -->
+      <div class="exame-card active" id="card-ecg" onclick="toggleECG()">
+        <div class="exame-top">
+          <div class="exame-icon">📈</div>
+          <div>
+            <h3>Eletrocardiograma</h3>
+            <p>ECG · Lead II</p>
+          </div>
+        </div>
+        <div class="exame-body">
+          <p>Insira os parâmetros do ECG e receba interpretação automática comparada com valores de referência por espécie.</p>
+          <div class="exame-tags">
+            <span class="tag tag-active">✓ Disponível</span>
+            <span class="tag tag-active">Cães &amp; Gatos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Ecocardiograma — em breve -->
+      <div class="exame-card disabled">
+        <div class="exame-top" style="background:#1C2E40">
+          <div class="exame-icon" style="background:#2C4A6A">🫀</div>
+          <div>
+            <h3>Ecocardiograma</h3>
+            <p>2D · M-Mode · Doppler</p>
+          </div>
+        </div>
+        <div class="exame-body">
+          <p>Análise de medidas ecocardiográficas com avaliação de função sistólica e diastólica.</p>
+          <div class="exame-tags">
+            <span class="tag tag-soon">Em breve</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pressão arterial — em breve -->
+      <div class="exame-card disabled">
+        <div class="exame-top" style="background:#1C2E40">
+          <div class="exame-icon" style="background:#2C4A6A">🩺</div>
+          <div>
+            <h3>Pressão Arterial</h3>
+            <p>Hipertensão · Hipotensão</p>
+          </div>
+        </div>
+        <div class="exame-body">
+          <p>Classificação e interpretação dos valores de pressão arterial sistêmica em pequenos animais.</p>
+          <div class="exame-tags">
+            <span class="tag tag-soon">Em breve</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Diagnóstico diferencial clínico — em breve -->
+      <div class="exame-card disabled">
+        <div class="exame-top" style="background:#1C2E40">
+          <div class="exame-icon" style="background:#2C4A6A">🔬</div>
+          <div>
+            <h3>Diagnóstico Diferencial</h3>
+            <p>Sinais clínicos + exames</p>
+          </div>
+        </div>
+        <div class="exame-body">
+          <p>Integração de múltiplos parâmetros clínicos para sugestão de diagnóstico diferencial completo.</p>
+          <div class="exame-tags">
+            <span class="tag tag-coming">Em desenvolvimento</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ECG PANEL — abre ao clicar no card -->
+    <div id="ecg-panel">
+      <div class="ecg-panel-header">
+        <div>
+          <h2>📈 Análise de Eletrocardiograma</h2>
+          <p>Parâmetros do ECG em Lead II · 25 mm/s · 1 mV/cm · Cães e Gatos</p>
+        </div>
+        <button class="btn-close-panel" onclick="closePanel()" title="Fechar">✕</button>
+      </div>
+
+      <div class="ecg-panel-body">
+
+        <!-- FORMULÁRIO -->
+        <div>
+          <div class="form-card" style="margin-bottom:16px">
+            <div class="form-card-header">🐾 Dados do Paciente</div>
+            <div class="form-card-body">
+              <div class="form-grid">
+                <div>
+                  <label>Espécie *</label>
+                  <select id="species" onchange="updateRefs()">
+                    <option value="">Selecione...</option>
+                    <option value="dog">Cão</option>
+                    <option value="cat">Gato</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Porte <span class="unit">(cões)</span></label>
+                  <select id="size" onchange="updateRefs()">
+                    <option value="small">Pequeno / Toy (≤ 10 kg)</option>
+                    <option value="large">Médio / Grande (&gt; 10 kg)</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Nome / ID</label>
+                  <input type="text" id="patient_name" placeholder="Ex: Thor" />
+                </div>
+                <div>
+                  <label>Raça</label>
+                  <input type="text" id="breed" placeholder="Ex: Poodle" />
+                </div>
+                <div>
+                  <label>Idade</label>
+                  <input type="text" id="age" placeholder="Ex: 5 anos" />
+                </div>
+                <div>
+                  <label>Peso <span class="unit">(kg)</span></label>
+                  <input type="number" id="weight" placeholder="4.5" step="0.1" min="0" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-card">
+            <div class="form-card-header">📈 Parâmetros do ECG</div>
+            <div class="form-card-body">
+              <div class="form-grid">
+
+                <div class="field-divider">Frequência e Ritmo</div>
+                <div>
+                  <label>FC * <span class="unit">(bpm)</span> <span class="ref" id="ref_hr"></span></label>
+                  <input type="number" id="hr" placeholder="120" min="0" max="400" oninput="liveCheck('hr')" />
+                </div>
+                <div>
+                  <label>Ritmo</label>
+                  <select id="rhythm">
+                    <option value="">Selecione...</option>
+                    <option value="sinus">Ritmo Sinusal</option>
+                    <option value="sinus_arrh">Arritmia Sinusal</option>
+                    <option value="sinus_brady">Bradicardia Sinusal</option>
+                    <option value="sinus_tachy">Taquicardia Sinusal</option>
+                    <option value="afib">Fibrilação Atrial</option>
+                    <option value="vt">Taquicardia Ventricular</option>
+                    <option value="avb1">Bloqueio AV 1º grau</option>
+                    <option value="avb2">Bloqueio AV 2º grau</option>
+                    <option value="avb3">Bloqueio AV 3º grau</option>
+                    <option value="lbbb">Bloqueio de Ramo Esquerdo</option>
+                    <option value="rbbb">Bloqueio de Ramo Direito</option>
+                    <option value="vpc">CVP / EV Ventriculares</option>
+                    <option value="apc">EV Supraventriculares</option>
+                    <option value="other">Outro</option>
+                  </select>
+                </div>
+
+                <div class="field-divider">Onda P</div>
+                <div>
+                  <label>Amplitude P <span class="unit">(mV)</span> <span class="ref" id="ref_p_amp"></span></label>
+                  <input type="number" id="p_amp" placeholder="0.25" step="0.01" min="0" oninput="liveCheck('p_amp')" />
+                </div>
+                <div>
+                  <label>Duração P <span class="unit">(s)</span> <span class="ref" id="ref_p_dur"></span></label>
+                  <input type="number" id="p_dur" placeholder="0.04" step="0.005" min="0" oninput="liveCheck('p_dur')" />
+                </div>
+                <div>
+                  <label>Morfologia P</label>
+                  <select id="p_morph">
+                    <option value="normal">Normal</option>
+                    <option value="wide">Alargada (P mitrale)</option>
+                    <option value="tall">Alta (P pulmonale)</option>
+                    <option value="biphasic">Bifásica</option>
+                    <option value="absent">Ausente</option>
+                    <option value="variable">Variável</option>
+                  </select>
+                </div>
+                <div></div>
+
+                <div class="field-divider">Intervalo PR e Complexo QRS</div>
+                <div>
+                  <label>Intervalo PR <span class="unit">(s)</span> <span class="ref" id="ref_pr"></span></label>
+                  <input type="number" id="pr" placeholder="0.10" step="0.005" min="0" oninput="liveCheck('pr')" />
+                </div>
+                <div>
+                  <label>Duração QRS <span class="unit">(s)</span> <span class="ref" id="ref_qrs"></span></label>
+                  <input type="number" id="qrs" placeholder="0.04" step="0.005" min="0" oninput="liveCheck('qrs')" />
+                </div>
+                <div>
+                  <label>Amplitude R <span class="unit">(mV)</span> <span class="ref" id="ref_r"></span></label>
+                  <input type="number" id="r_amp" placeholder="1.5" step="0.05" min="0" oninput="liveCheck('r_amp')" />
+                </div>
+                <div>
+                  <label>Eixo Elétrico <span class="unit">(°)</span> <span class="ref" id="ref_mea"></span></label>
+                  <input type="number" id="mea" placeholder="70" step="1" oninput="liveCheck('mea')" />
+                </div>
+
+                <div class="field-divider">Segmento ST e Onda T</div>
+                <div>
+                  <label>Segmento ST</label>
+                  <select id="st_seg">
+                    <option value="normal">Normal (linha de base)</option>
+                    <option value="depression">Depressão</option>
+                    <option value="elevation">Supradesnivelamento</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Desvio ST <span class="unit">(mV)</span> <span class="ref" id="ref_st"></span></label>
+                  <input type="number" id="st_dev" placeholder="0.05" step="0.01" min="0" oninput="liveCheck('st_dev')" />
+                </div>
+                <div>
+                  <label>Amplitude T <span class="unit">(mV)</span></label>
+                  <input type="number" id="t_amp" placeholder="0.3" step="0.01" />
+                </div>
+                <div>
+                  <label>Intervalo QT <span class="unit">(s)</span> <span class="ref" id="ref_qt"></span></label>
+                  <input type="number" id="qt" placeholder="0.20" step="0.005" min="0" oninput="liveCheck('qt')" />
+                </div>
+
+                <div class="full">
+                  <label>Notas adicionais</label>
+                  <input type="text" id="notes" placeholder="Artefatos, qualidade do traçado..." />
+                </div>
+
+                <button class="btn-analyze" onclick="analyze()">🔍 Analisar ECG</button>
+                <button class="btn-clear-form" onclick="clearForm()">✕ Limpar</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tabela referências -->
+          <button class="ref-toggle-btn" onclick="toggleRef()">📋 Ver Valores de Referência</button>
+          <div class="ref-area" id="ref-area">
+            <table class="ref-table" style="margin-top:8px">
+              <tr><th>Parâmetro</th><th>Cão Pequeno</th><th>Cão Médio/Grande</th><th>Gato</th></tr>
+              <tr><td>FC (bpm)</td><td>80–180</td><td>70–160</td><td>120–240</td></tr>
+              <tr><td>Ampl. P (mV)</td><td>0.15–0.40</td><td>0.15–0.40</td><td>≤ 0.20</td></tr>
+              <tr><td>Dur. P (s)</td><td>0.02–0.04</td><td>0.02–0.04</td><td>≤ 0.04</td></tr>
+              <tr><td>PR (s)</td><td>0.06–0.13</td><td>0.06–0.13</td><td>0.05–0.09</td></tr>
+              <tr><td>QRS (s)</td><td>0.03–0.05</td><td>0.04–0.06</td><td>≤ 0.04</td></tr>
+              <tr><td>Ampl. R (mV)</td><td>0.9–2.8</td><td>1.2–3.0</td><td>≤ 0.9</td></tr>
+              <tr><td>ST (mV)</td><td>≤ 0.05</td><td>≤ 0.05</td><td>≤ 0.05</td></tr>
+              <tr><td>QT (s)</td><td>0.15–0.25</td><td>0.15–0.25</td><td>0.12–0.20</td></tr>
+              <tr><td>MEA (°)</td><td>+40 a +100</td><td>+40 a +100</td><td>0 a +160</td></tr>
+            </table>
+            <p class="ref-note">Fontes: Varshney (2020) Springer; Opti-ECG Vet Guide; PMC/NCBI ECG reference values in dogs (2020).</p>
+          </div>
+        </div>
+
+        <!-- RESULTADO -->
+        <div>
+          <div class="result-card">
+            <div class="result-card-header">📊 Resultado da Interpretação</div>
+            <div class="result-card-body">
+              <div id="ecg-placeholder">
+                <div class="big-icon">🫀</div>
+                <p>Preencha os parâmetros<br/>e clique em <strong>Analisar ECG</strong>.</p>
+              </div>
+              <div id="ecg-result">
+                <div id="patient-summary" style="background:var(--gray);border-radius:8px;padding:9px 13px;margin-bottom:12px;font-size:12px"></div>
+                <div class="summary-chips">
+                  <div class="s-chip"><div class="n ok-color" id="cnt-ok">0</div><div class="l">Normal</div></div>
+                  <div class="s-chip"><div class="n w-color"  id="cnt-warn">0</div><div class="l">Limítrofe</div></div>
+                  <div class="s-chip"><div class="n d-color"  id="cnt-danger">0</div><div class="l">Alterado</div></div>
+                </div>
+                <div id="overall-badge" class="overall-badge"></div>
+                <table class="param-table">
+                  <thead><tr><th>Parâmetro</th><th>Valor</th><th>Ref.</th><th>Status</th></tr></thead>
+                  <tbody id="param-rows"></tbody>
+                </table>
+                <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">💡 Interpretação</div>
+                <div class="diag-list" id="diag-items"></div>
+                <div class="disclaimer">
+                  <span style="font-size:14px;flex-shrink:0">⚠️</span>
+                  <span>Auxílio diagnóstico — não substitui avaliação clínica ou laudo de cardiologista veterinário.</span>
+                </div>
+                <button onclick="window.print()" style="width:100%;margin-top:10px;background:var(--blue);color:white;border:none;border-radius:8px;padding:9px;font-size:12px;font-weight:700;cursor:pointer">🖨️ Imprimir Laudo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end panel body -->
+    </div><!-- end ecg-panel -->
+
+  </div>
+</section>
+
+<!-- ── SOBRE ──────────────────────────────────────────────────────────── -->
+<section id="sobre">
+  <div class="section-inner">
+    <div class="sobre-grid">
+      <div class="sobre-text">
+        <div class="section-divider"></div>
+        <h2>Por que a Cardiovet IA?</h2>
+        <p>O diagnóstico cardiovascular em pequenos animais é complexo, multifatorial e exige um cardiologista especialista — que não está disponível na grande maioria das cidades brasileiras.</p>
+        <p>A Cardiovet IA coloca o poder do diagnóstico diferencial baseado em evidências nas mãos de qualquer veterinário, em qualquer clínica, em qualquer cidade.</p>
+      </div>
+      <div>
+        <ul class="diff-list">
+          <li><div class="d-icon">🎯</div><div><strong>Foco exclusivo</strong> em cardiologia de pequenos animais — profundidade que soluções genéricas não têm.</div></li>
+          <li><div class="d-icon">📊</div><div><strong>Valores baseados em literatura</strong> científica veterinária validada (Varshney, PMC/NCBI, AniCura).</div></li>
+          <li><div class="d-icon">⚡</div><div><strong>Interpretação em segundos</strong> — interface projetada para o fluxo real de atendimento.</div></li>
+          <li><div class="d-icon">🔒</div><div><strong>100% no navegador</strong> — nenhum dado do paciente é enviado a servidores.</div></li>
+          <li><div class="d-icon">🗺️</div><div><strong>Roadmap:</strong> ECG (ativo) → Ecocardiograma → Pressão arterial → Diagnóstico diferencial integrado.</div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────────────── -->
+<footer>
+  <strong>Cardiovet IA</strong> &nbsp;·&nbsp;
+  Diagnóstico cardiovascular para pequenos animais &nbsp;·&nbsp;
+  joaoantonio.negocios@gmail.com &nbsp;·&nbsp;
+  2025 &nbsp;·&nbsp;
+  <em>Ferramenta de apoio clínico — não substitui o médico-veterinário.</em>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════ SCRIPT -->
+<script>
+const REFS = {
+  dog_small: {
+    hr:    { min:80,   max:180,  unit:'bpm', label:'80–180 bpm' },
+    p_amp: { min:0.15, max:0.40, unit:'mV',  label:'0.15–0.40 mV' },
+    p_dur: { min:0.02, max:0.04, unit:'s',   label:'0.02–0.04 s' },
+    pr:    { min:0.06, max:0.13, unit:'s',   label:'0.06–0.13 s' },
+    qrs:   { min:0.03, max:0.05, unit:'s',   label:'0.03–0.05 s' },
+    r_amp: { min:0.9,  max:2.8,  unit:'mV',  label:'0.9–2.8 mV' },
+    st_dev:{ min:0,    max:0.05, unit:'mV',  label:'≤ 0.05 mV' },
+    qt:    { min:0.15, max:0.25, unit:'s',   label:'0.15–0.25 s' },
+    mea:   { min:40,   max:100,  unit:'°',   label:'+40° a +100°' },
+  },
+  dog_large: {
+    hr:    { min:70,   max:160,  unit:'bpm', label:'70–160 bpm' },
+    p_amp: { min:0.15, max:0.40, unit:'mV',  label:'0.15–0.40 mV' },
+    p_dur: { min:0.02, max:0.04, unit:'s',   label:'0.02–0.04 s' },
+    pr:    { min:0.06, max:0.13, unit:'s',   label:'0.06–0.13 s' },
+    qrs:   { min:0.04, max:0.06, unit:'s',   label:'0.04–0.06 s' },
+    r_amp: { min:1.2,  max:3.0,  unit:'mV',  label:'1.2–3.0 mV' },
+    st_dev:{ min:0,    max:0.05, unit:'mV',  label:'≤ 0.05 mV' },
+    qt:    { min:0.15, max:0.25, unit:'s',   label:'0.15–0.25 s' },
+    mea:   { min:40,   max:100,  unit:'°',   label:'+40° a +100°' },
+  },
+  cat: {
+    hr:    { min:120,  max:240,  unit:'bpm', label:'120–240 bpm' },
+    p_amp: { min:0,    max:0.20, unit:'mV',  label:'≤ 0.20 mV' },
+    p_dur: { min:0,    max:0.04, unit:'s',   label:'≤ 0.04 s' },
+    pr:    { min:0.05, max:0.09, unit:'s',   label:'0.05–0.09 s' },
+    qrs:   { min:0,    max:0.04, unit:'s',   label:'≤ 0.04 s' },
+    r_amp: { min:0,    max:0.9,  unit:'mV',  label:'≤ 0.9 mV' },
+    st_dev:{ min:0,    max:0.05, unit:'mV',  label:'≤ 0.05 mV' },
+    qt:    { min:0.12, max:0.20, unit:'s',   label:'0.12–0.20 s' },
+    mea:   { min:0,    max:160,  unit:'°',   label:'0° a +160°' },
+  }
+};
+
+const PARAM_LABELS = {
+  hr:'Freq. Cardíaca', p_amp:'Amplitude P', p_dur:'Duração P',
+  pr:'Intervalo PR', qrs:'Duração QRS', r_amp:'Amplitude R',
+  st_dev:'Desvio ST', qt:'QT', mea:'Eixo (MEA)'
+};
+
+function getRefSet() {
+  const sp = document.getElementById('species').value;
+  const sz = document.getElementById('size').value;
+  if (sp === 'cat') return REFS.cat;
+  if (sp === 'dog') return sz === 'large' ? REFS.dog_large : REFS.dog_small;
+  return null;
+}
+
+function updateRefs() {
+  const refs = getRefSet(); if (!refs) return;
+  const map = { hr:'ref_hr', p_amp:'ref_p_amp', p_dur:'ref_p_dur', pr:'ref_pr',
+                qrs:'ref_qrs', r_amp:'ref_r', st_dev:'ref_st', qt:'ref_qt', mea:'ref_mea' };
+  for (const [k,id] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el && refs[k]) el.textContent = refs[k].label;
+  }
+}
+
+function checkValue(key, val, refs) {
+  const r = refs[key]; if (!r) return null;
+  const margin = (r.max - r.min) * 0.1;
+  if (val >= r.min && val <= r.max) return 'ok';
+  if (val >= r.min - margin && val <= r.max + margin) return 'warn';
+  return 'danger';
+}
+
+function liveCheck(id) {
+  const refs = getRefSet(); if (!refs) return;
+  const el = document.getElementById(id);
+  const val = parseFloat(el.value);
+  if (isNaN(val)) { el.className = ''; return; }
+  const s = checkValue(id, val, refs);
+  el.className = s === 'ok' ? 'ok' : s === 'warn' ? 'warn' : s === 'danger' ? 'danger' : '';
+}
+
+function toggleRef() {
+  document.getElementById('ref-area').classList.toggle('open');
+}
+
+function toggleECG() {
+  const panel = document.getElementById('ecg-panel');
+  if (panel.classList.contains('open')) { closePanel(); }
+  else { openECG(); }
+}
+
+function openECG() {
+  const panel = document.getElementById('ecg-panel');
+  panel.classList.add('open');
+  document.getElementById('card-ecg').classList.add('active');
+  setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+
+function closePanel() {
+  document.getElementById('ecg-panel').classList.remove('open');
+}
+
+function clearForm() {
+  ['hr','p_amp','p_dur','pr','qrs','r_amp','st_dev','t_amp','qt','mea','notes','patient_name','breed','age','weight']
+    .forEach(id => { const el = document.getElementById(id); if (el) { el.value=''; el.className=''; } });
+  ['species','size','rhythm','p_morph','st_seg']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.selectedIndex = 0; });
+  document.getElementById('ecg-placeholder').style.display = 'flex';
+  document.getElementById('ecg-result').style.display = 'none';
+  updateRefs();
+}
+
+function analyze() {
+  const species = document.getElementById('species').value;
+  if (!species) { alert('Selecione a espécie antes de analisar.'); return; }
+  const refs = getRefSet();
+  const vals = {
+    hr:    parseFloat(document.getElementById('hr').value),
+    p_amp: parseFloat(document.getElementById('p_amp').value),
+    p_dur: parseFloat(document.getElementById('p_dur').value),
+    pr:    parseFloat(document.getElementById('pr').value),
+    qrs:   parseFloat(document.getElementById('qrs').value),
+    r_amp: parseFloat(document.getElementById('r_amp').value),
+    st_dev:parseFloat(document.getElementById('st_dev').value),
+    qt:    parseFloat(document.getElementById('qt').value),
+    mea:   parseFloat(document.getElementById('mea').value),
+  };
+  const rhythm  = document.getElementById('rhythm').value;
+  const p_morph = document.getElementById('p_morph').value;
+  const st_seg  = document.getElementById('st_seg').value;
+  const t_amp   = parseFloat(document.getElementById('t_amp').value);
+
+  let cntOk=0, cntWarn=0, cntDanger=0;
+  const rows = [];
+  for (const [key,val] of Object.entries(vals)) {
+    if (isNaN(val)) continue;
+    const status = checkValue(key, val, refs); if (!status) continue;
+    if (status==='ok') cntOk++; else if (status==='warn') cntWarn++; else cntDanger++;
+    rows.push({ label:PARAM_LABELS[key], val, unit:refs[key].unit, ref:refs[key].label, status });
+  }
+
+  let ovClass, ovText;
+  if (cntDanger>0)      { ovClass='ov-danger'; ovText='❌ ECG com alterações significativas — avaliação cardiológica recomendada'; }
+  else if (cntWarn>0)   { ovClass='ov-warn';   ovText='⚠️ ECG com achados limítrofes — monitoramento e correlação clínica indicados'; }
+  else if (cntOk>0)     { ovClass='ov-ok';     ovText='✅ ECG dentro dos parâmetros normais para a espécie'; }
+  else                  { ovClass='ov-warn';   ovText='ℹ️ Dados insuficientes para análise completa'; }
+
+  const diags = [];
+  const rhythmMap = {
+    afib:        { sev:'urgent',   title:'Fibrilação Atrial', desc:'Arritmia grave. Associada a DDVM, CMD, CMH. Investigar ecocardiograma urgente.' },
+    vt:          { sev:'urgent',   title:'Taquicardia Ventricular', desc:'Potencialmente fatal. Tratamento antiarrítmico imediato. Investigar cardiopatia estrutural.' },
+    avb3:        { sev:'urgent',   title:'Bloqueio AV 3º Grau', desc:'Bloqueio total. Síncope e morte súbita. Avaliar indicação de marca-passo.' },
+    avb2:        { sev:'moderate', title:'Bloqueio AV 2º Grau', desc:'Condução intermitente. Avaliar progressão para bloqueio total.' },
+    avb1:        { sev:'moderate', title:'Bloqueio AV 1º Grau', desc:'PR prolongado. Pode indicar aumento atrial ou doença do nó AV.' },
+    lbbb:        { sev:'moderate', title:'Bloqueio de Ramo Esquerdo', desc:'QRS alargado. Geralmente indica doença cardíaca estrutural grave.' },
+    rbbb:        { sev:'moderate', title:'Bloqueio de Ramo Direito', desc:'Pode ser fisiológico ou indicar sobrecarga de VD.' },
+    vpc:         { sev:'moderate', title:'CVPs / EV Ventriculares', desc:'Se >30/h ou em salvas, investigar cardiopatia e tratar.' },
+    apc:         { sev:'info',     title:'EV Supraventriculares', desc:'Geralmente benignas se isoladas. Se frequentes, investigar doença atrial.' },
+    sinus_tachy: { sev:'info',     title:'Taquicardia Sinusal', desc:'Avaliar dor, febre, anemia, IC, hipertireoidismo (gatos).' },
+    sinus_brady: { sev:'moderate', title:'Bradicardia Sinusal', desc:'Avaliar hipercalemia, hipotireoidismo, doença do nó sinusal, fármacos.' },
+    sinus_arrh:  { sev:'info',     title:'Arritmia Sinusal', desc:'Variação fisiológica da FC com a respiração em cães.' },
+  };
+  if (rhythm && rhythmMap[rhythm]) diags.push(rhythmMap[rhythm]);
+  if (p_morph==='wide')   diags.push({ sev:'moderate', title:'P Mitrale', desc:'Onda P alargada. Sugestivo de aumento atrial esquerdo. Considerar ecocardiograma.' });
+  if (p_morph==='tall')   diags.push({ sev:'moderate', title:'P Pulmonale', desc:'Onda P alta. Sugestivo de aumento atrial direito / hipertensão pulmonar.' });
+  if (p_morph==='absent') diags.push({ sev:'urgent',   title:'Onda P ausente', desc:'Avaliar fibrilação atrial, ritmo juncional ou parada atrial.' });
+  if (st_seg==='depression') diags.push({ sev:'urgent', title:'Infradesnivelamento de ST', desc:'Isquemia miocárdica, hipocalemia, intoxicação por digitálicos ou hipertrofia.' });
+  if (st_seg==='elevation')  diags.push({ sev:'urgent', title:'Supradesnivelamento de ST', desc:'Lesão miocárdica aguda, pericardite. Investigar urgente.' });
+
+  if (!isNaN(t_amp) && !isNaN(vals.r_amp) && vals.r_amp>0) {
+    const ratio = Math.abs(t_amp)/vals.r_amp;
+    if (ratio>0.25) diags.push({ sev:'moderate', title:'Onda T aumentada', desc:`T/R = ${(ratio*100).toFixed(0)}% (ref. ≤25%). Distúrbio eletrolítico, isquemia ou sobrecarga ventricular.` });
+  }
+  if (!isNaN(vals.hr)) {
+    if (vals.hr<refs.hr.min) diags.push({ sev:'moderate', title:'Bradicardia', desc:`FC ${vals.hr} bpm. Avaliar hipotermia, hipotireoidismo, hipercalemia, doença do nó sinusal.` });
+    if (vals.hr>refs.hr.max) diags.push({ sev:'info',     title:'Taquicardia', desc:`FC ${vals.hr} bpm. Descartar dor, estresse, febre, IC, anemia.` });
+  }
+  if (!isNaN(vals.pr) && vals.pr>refs.pr.max) diags.push({ sev:'moderate', title:'PR Prolongado — Bloqueio AV 1º Grau', desc:'Condução AV lentificada. Tonalidade vagal, distúrbio eletrolítico ou fibrose do nó AV.' });
+  if (!isNaN(vals.qrs) && vals.qrs>refs.qrs.max) diags.push({ sev:'moderate', title:'QRS Alargado', desc:`${vals.qrs}s (ref. ${refs.qrs.label}). Bloqueio de ramo, hipertrofia ou condução aberrante.` });
+  if (!isNaN(vals.r_amp) && vals.r_amp>refs.r_amp.max) diags.push({ sev:'moderate', title:'Amplitude R Aumentada', desc:`${vals.r_amp} mV (ref. ${refs.r_amp.label}). Hipertrofia/aumento ventricular esquerdo.` });
+  if (!isNaN(vals.mea)) {
+    if (vals.mea<refs.mea.min) diags.push({ sev:'moderate', title:'Desvio do Eixo à Esquerda', desc:`${vals.mea}° (ref. ${refs.mea.label}). Hipertrofia/bloqueio de ramo esquerdo.` });
+    if (vals.mea>refs.mea.max) diags.push({ sev:'moderate', title:'Desvio do Eixo à Direita', desc:`${vals.mea}° (ref. ${refs.mea.label}). Hipertrofia VD, hipertensão pulmonar, bloqueio de ramo direito.` });
+  }
+  if (diags.length===0 && cntDanger===0 && cntWarn===0 && cntOk>0) {
+    diags.push({ sev:'info', title:'Sem alterações nos parâmetros avaliados', desc:'Todos os valores estão dentro da referência. Correlacionar com achados clínicos.' });
+  }
+
+  // Render
+  const name  = document.getElementById('patient_name').value;
+  const breed = document.getElementById('breed').value;
+  const age   = document.getElementById('age').value;
+  const spLabel = species==='cat' ? 'Gato' : 'Cão';
+  const szLabel = species==='dog' ? (document.getElementById('size').value==='large' ? ' · Médio/Grande' : ' · Pequeno/Toy') : '';
+  document.getElementById('patient-summary').innerHTML =
+    `<strong>${name||'Paciente'}</strong>${breed?' · '+breed:''}${age?' · '+age:''} &nbsp;|&nbsp; <strong>${spLabel}</strong>${szLabel}`;
+
+  document.getElementById('cnt-ok').textContent = cntOk;
+  document.getElementById('cnt-warn').textContent = cntWarn;
+  document.getElementById('cnt-danger').textContent = cntDanger;
+
+  const badge = document.getElementById('overall-badge');
+  badge.className = 'overall-badge ' + ovClass;
+  badge.textContent = ovText;
+
+  document.getElementById('param-rows').innerHTML = rows.map(r => {
+    const dc = r.status==='ok'?'dot-ok':r.status==='warn'?'dot-w':'dot-d';
+    const tc = r.status==='ok'?'ok-color':r.status==='warn'?'w-color':'d-color';
+    const st = r.status==='ok'?'Normal':r.status==='warn'?'Limítrofe':'Alterado';
+    return `<tr><td>${r.label}</td><td><strong>${r.val} ${r.unit}</strong></td>
+      <td style="color:#888;font-size:11px">${r.ref}</td>
+      <td class="${tc}"><span class="dot ${dc}"></span>${st}</td></tr>`;
+  }).join('');
+
+  document.getElementById('diag-items').innerHTML = diags.map(d =>
+    `<div class="diag-item ${d.sev}"><strong>${d.title}</strong><p>${d.desc}</p></div>`
+  ).join('');
+
+  document.getElementById('ecg-placeholder').style.display = 'none';
+  document.getElementById('ecg-result').style.display = 'block';
+}
+
+updateRefs();
+</script>
+
+<style>
+@media print {
+  nav, .hero, .stats-bar, #como-funciona, #sobre, footer,
+  .exames-grid, .btn-analyze, .btn-clear-form, .ref-toggle-btn, .btn-close-panel { display: none !important; }
+  #ecg-panel { display: block !important; box-shadow: none; }
+  .ecg-panel-body { grid-template-columns: 1fr !important; }
+  body { background: white; }
+}
+</style>
+
+</body>
+</html>
